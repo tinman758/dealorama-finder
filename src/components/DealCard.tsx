@@ -63,17 +63,17 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
       >
         {/* Product Image for Product Deals */}
         {isProductDeal && deal.productImage && (
-          <div className="relative w-full overflow-hidden bg-gray-50">
-            <AspectRatio ratio={4/3} className="w-full">
+          <div className="relative w-full overflow-hidden bg-gray-50 h-36">
+            <div className="w-full h-full flex items-center justify-center p-2">
               <img 
                 src={deal.productImage} 
                 alt={deal.title} 
-                className="w-full h-full object-contain p-2" 
+                className="max-h-full max-w-full object-contain" 
               />
               <div className="absolute top-2 left-2 bg-deal text-white text-xs font-bold px-2 py-1 rounded">
                 {deal.discount}
               </div>
-            </AspectRatio>
+            </div>
           </div>
         )}
         
