@@ -9,8 +9,6 @@ import { Mail, Lock, ArrowRight, Info, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 import AuthLayout from '@/components/auth/AuthLayout';
-import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
-import AuthDivider from '@/components/auth/AuthDivider';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -93,9 +91,6 @@ const LoginPage = () => {
       title="Log In to DealFinder"
       subtitle="Welcome back! Log in to access your saved deals and personalized recommendations"
     >
-      <SocialLoginButtons action="login" />
-      <AuthDivider />
-
       {showRateLimitWarning && (
         <Alert variant="destructive" className="mb-4">
           <AlertTriangle className="h-4 w-4" />

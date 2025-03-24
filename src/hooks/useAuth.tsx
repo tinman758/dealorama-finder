@@ -1,7 +1,7 @@
 
 import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '@/integrations/supabase/client'
-import { User, Session, AuthError, Provider } from '@supabase/supabase-js'
+import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
@@ -12,7 +12,6 @@ type AuthContextType = {
   signUp: (email: string, password: string, meta?: { name?: string }) => Promise<{ error: AuthError | null }>
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  signInWithSocial: (provider: Provider) => Promise<{ error: AuthError | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -108,26 +107,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  // Sign in with social provider
-  const signInWithSocial = async (provider: Provider) => {
-    try {
-      const redirectTo = `${getRedirectURL()}/auth/callback`
-      console.log('Using social redirect URL:', redirectTo)
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo,
-        },
-      })
-      
-      return { error }
-    } catch (error) {
-      console.error(`Error signing in with ${provider}:`, error)
-      return { error: error as AuthError }
-    }
-  }
-
   // Sign out
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -141,7 +120,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signUp,
     signIn,
     signOut,
-    signInWithSocial,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

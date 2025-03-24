@@ -6,11 +6,9 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { User, Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner'; // Add the import for toast
+import { toast } from 'sonner';
 
 import AuthLayout from '@/components/auth/AuthLayout';
-import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
-import AuthDivider from '@/components/auth/AuthDivider';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -111,7 +109,6 @@ const SignupPage = () => {
       form.reset();
     } catch (error: any) {
       console.error("Signup error:", error);
-      // Changed from const to let to allow reassignment
       let errorMessage = error?.message || "Please try again or contact support if the problem persists";
       
       // Display appropriate error message
@@ -132,9 +129,6 @@ const SignupPage = () => {
       title="Create an Account"
       subtitle="Join DealFinder to save your favorite deals and get personalized recommendations"
     >
-      <SocialLoginButtons action="signup" />
-      <AuthDivider />
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
