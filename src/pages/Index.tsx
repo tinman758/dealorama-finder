@@ -5,6 +5,7 @@ import FeaturedDeals from '@/components/FeaturedDeals';
 import PopularCategories from '@/components/PopularCategories';
 import AdvertisementBanner from '@/components/AdvertisementBanner';
 import PopularStores from '@/components/PopularStores';
+import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -44,6 +45,9 @@ const Index = () => {
             />
           </div>
         </section>
+        
+        {/* FAQ Section */}
+        <FAQ />
       </main>
       <Footer />
     </div>
