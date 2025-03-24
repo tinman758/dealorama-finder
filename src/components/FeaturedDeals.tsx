@@ -17,10 +17,6 @@ const FeaturedDeals = () => {
   const linkDeals = React.useMemo(() => {
     return allFeaturedDeals.filter(deal => deal.type === 'link');
   }, [allFeaturedDeals]);
-  
-  const productDeals = React.useMemo(() => {
-    return allFeaturedDeals.filter(deal => deal.type === 'product');
-  }, [allFeaturedDeals]);
 
   return (
     <section className="py-12">
@@ -33,7 +29,6 @@ const FeaturedDeals = () => {
               <TabsTrigger value="all">All Deals</TabsTrigger>
               <TabsTrigger value="codes">Coupon Codes</TabsTrigger>
               <TabsTrigger value="links">Deal Links</TabsTrigger>
-              <TabsTrigger value="products">Products</TabsTrigger>
             </TabsList>
             
             <Link to="/deals" className="text-sm font-medium text-deal hover:underline">
@@ -66,14 +61,6 @@ const FeaturedDeals = () => {
               <TabsContent value="links" className="mt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {linkDeals.slice(0, 8).map(deal => (
-                    <DealCard key={deal.id} deal={deal} featured={true} />
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="products" className="mt-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {productDeals.slice(0, 8).map(deal => (
                     <DealCard key={deal.id} deal={deal} featured={true} />
                   ))}
                 </div>
