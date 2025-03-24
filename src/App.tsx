@@ -38,7 +38,6 @@ import AdminDeals from "./pages/admin/AdminDeals";
 import AdminStores from "./pages/admin/AdminStores";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminAdmins from "./pages/admin/AdminAdmins";
-import AdminAdvertisements from "./pages/admin/AdminAdvertisements";
 
 // Move QueryClient creation inside the component
 const App = () => {
@@ -83,7 +82,6 @@ const App = () => {
                 <Route path="deals" element={<AdminDeals />} />
                 <Route path="stores" element={<AdminStores />} />
                 <Route path="categories" element={<AdminCategories />} />
-                <Route path="advertisements" element={<AdminAdvertisements />} />
                 <Route path="admins" element={<AdminAdmins />} />
               </Route>
               

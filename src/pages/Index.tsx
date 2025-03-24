@@ -6,7 +6,6 @@ import PopularCategories from '@/components/PopularCategories';
 import PopularStores from '@/components/PopularStores';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
-import AdsCarousel from '@/components/AdsCarousel';
 import SignupCTA from '@/components/SignupCTA';
 
 const Index = () => {
@@ -16,14 +15,6 @@ const Index = () => {
       <main className="flex-grow">
         <HeroSection />
         <FeaturedDeals />
-        
-        {/* Advertisement Carousel - now fetching from database */}
-        <section className="py-6">
-          <div className="container-fluid">
-            <AdsCarousel />
-          </div>
-        </section>
-        
         <PopularCategories />
         <PopularStores />
         

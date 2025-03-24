@@ -74,9 +74,6 @@ const AdminLayout = () => {
               <TabsTrigger value="categories" asChild>
                 <Link to="/admin/categories">Categories</Link>
               </TabsTrigger>
-              <TabsTrigger value="advertisements" asChild>
-                <Link to="/admin/advertisements">Advertisements</Link>
-              </TabsTrigger>
             </TabsList>
           </Tabs>
           
