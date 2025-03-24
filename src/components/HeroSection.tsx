@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, ShoppingBag, Headphones, Car, Plane } from 'lucide-react';
 
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,12 +59,53 @@ const HeroSection = () => {
           <p className="text-sm text-gray-500 mt-2">Find amazing deals from thousands of stores</p>
         </form>
         
-        <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm text-gray-600">
-          <span>Popular searches:</span>
-          <button onClick={() => navigate('/category/fashion')} className="text-deal hover:underline">Fashion</button>
-          <button onClick={() => navigate('/category/electronics')} className="text-deal hover:underline">Electronics</button>
-          <button onClick={() => navigate('/category/food')} className="text-deal hover:underline">Food</button>
-          <button onClick={() => navigate('/category/travel')} className="text-deal hover:underline">Travel</button>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <span className="text-sm text-gray-600 flex items-center mt-0.5 mr-1">Popular:</span>
+          
+          <button 
+            onClick={() => navigate('/category/fashion')} 
+            className="flex items-center gap-1.5 bg-[#FEF7CD] px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover"
+            aria-label="Fashion category"
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+            <span>Fashion</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/category/electronics')} 
+            className="flex items-center gap-1.5 bg-[#D3E4FD] px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover"
+            aria-label="Electronics category"
+          >
+            <Headphones className="h-3.5 w-3.5" />
+            <span>Electronics</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/category/food')} 
+            className="flex items-center gap-1.5 bg-[#F2FCE2] px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover"
+            aria-label="Food category"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>Food</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/category/travel')} 
+            className="flex items-center gap-1.5 bg-[#FFDEE2] px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover"
+            aria-label="Travel category"
+          >
+            <Plane className="h-3.5 w-3.5" />
+            <span>Travel</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/category/automotive')} 
+            className="flex items-center gap-1.5 bg-[#E5DEFF] px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover"
+            aria-label="Automotive category"
+          >
+            <Car className="h-3.5 w-3.5" />
+            <span>Automotive</span>
+          </button>
         </div>
       </div>
     </section>
