@@ -1,4 +1,3 @@
-
 import { Deal } from "../types";
 
 export const deals: Deal[] = [
@@ -167,7 +166,6 @@ export const deals: Deal[] = [
     usedCount: 476,
     type: "link"
   },
-  // Adding product-based deals
   {
     id: "13",
     title: "Apple AirPods Pro (2nd Generation)",
@@ -183,7 +181,7 @@ export const deals: Deal[] = [
     type: "product",
     price: "$199.99",
     originalPrice: "$249.99",
-    productImage: "https://logo.clearbit.com/apple.com"
+    productImage: "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=800&h=600&fit=crop"
   },
   {
     id: "14",
@@ -199,7 +197,7 @@ export const deals: Deal[] = [
     type: "product",
     price: "$999.99",
     originalPrice: "$1,299.99",
-    productImage: "https://logo.clearbit.com/samsung.com"
+    productImage: "https://images.unsplash.com/photo-1593784991095-a205069533cd?w=800&h=600&fit=crop"
   },
   {
     id: "15",
@@ -215,7 +213,7 @@ export const deals: Deal[] = [
     type: "product",
     price: "$105.97",
     originalPrice: "$150.00",
-    productImage: "https://logo.clearbit.com/nike.com"
+    productImage: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop"
   }
 ];
 

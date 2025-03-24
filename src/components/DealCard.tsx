@@ -5,6 +5,7 @@ import { Check, Copy, ExternalLink, Tag } from 'lucide-react';
 import { Deal } from '../types';
 import { getStoreById } from '../data/stores';
 import { toast } from "@/hooks/use-toast";
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface DealCardProps {
   deal: Deal;
@@ -52,29 +53,31 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
       className={`
         group relative overflow-hidden rounded-lg bg-white border border-gray-100 
         transition-all duration-300 hover:shadow-glossy ${featured ? 'shadow-medium' : 'shadow-soft'}
+        flex flex-col h-full
       `}
-      style={{ height: featured ? 'auto' : '100%' }}
     >
       <Link 
         to={`/deal/${deal.id}`} 
-        className="block h-full" 
+        className="block flex-grow" 
         onClick={handleDealClick}
       >
         {/* Product Image for Product Deals */}
         {isProductDeal && deal.productImage && (
-          <div className="relative w-full pt-[75%] overflow-hidden bg-gray-50">
-            <img 
-              src={deal.productImage} 
-              alt={deal.title} 
-              className="absolute top-0 left-0 w-full h-full object-contain p-2" 
-            />
-            <div className="absolute top-2 left-2 bg-deal text-white text-xs font-bold px-2 py-1 rounded">
-              {deal.discount}
-            </div>
+          <div className="relative w-full overflow-hidden bg-gray-50">
+            <AspectRatio ratio={4/3} className="w-full">
+              <img 
+                src={deal.productImage} 
+                alt={deal.title} 
+                className="w-full h-full object-contain p-2" 
+              />
+              <div className="absolute top-2 left-2 bg-deal text-white text-xs font-bold px-2 py-1 rounded">
+                {deal.discount}
+              </div>
+            </AspectRatio>
           </div>
         )}
         
-        <div className="p-5">
+        <div className="p-5 flex-grow flex flex-col">
           {/* Store Logo */}
           {store && (
             <div className="flex items-center mb-4">
@@ -95,7 +98,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
           )}
           
           {/* Deal Content */}
-          <div className="mb-4">
+          <div className="mb-4 flex-grow">
             <div className="flex mb-2">
               {!isProductDeal && <span className="deal-badge">{deal.discount}</span>}
               {formattedDate && (
@@ -130,68 +133,68 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
           )}
         </div>
         
-        {/* Deal Code, Link, or Product Button */}
-        <div className="mt-auto border-t border-gray-100">
-          {deal.code ? (
-            <button
-              id={`deal-code-${deal.id}`}
-              className="deal-code-btn flex items-center justify-between w-full p-4 text-left transition-colors hover:bg-gray-50"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                copyCode(deal.code!);
-              }}
-            >
-              <div className="text-gray-600 font-medium">
-                <span className="text-xs uppercase mr-1">CODE:</span>
-                <span className="font-mono">{deal.code}</span>
-              </div>
-              <div className="flex items-center text-xs font-medium text-deal">
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 mr-1" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-1" />
-                    <span>Copy</span>
-                  </>
-                )}
-              </div>
-            </button>
-          ) : isProductDeal ? (
-            <div className="p-4">
-              <a 
-                href={deal.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="deal-button w-full flex items-center justify-center"
-              >
-                <span>Buy Now</span>
-                <Tag className="h-4 w-4 ml-1" />
-              </a>
-            </div>
-          ) : (
-            <div className="p-4">
-              <a 
-                href={deal.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="deal-button w-full flex items-center justify-center"
-              >
-                <span>Get Deal</span>
-                <ExternalLink className="h-4 w-4 ml-1" />
-              </a>
-            </div>
-          )}
-        </div>
+        {/* Hover effect overlay */}
+        <div className="absolute inset-0 bg-deal/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </Link>
       
-      {/* Hover effect overlay */}
-      <div className="absolute inset-0 bg-deal/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      {/* Deal Code, Link, or Product Button */}
+      <div className="mt-auto border-t border-gray-100 w-full">
+        {deal.code ? (
+          <button
+            id={`deal-code-${deal.id}`}
+            className="deal-code-btn flex items-center justify-between w-full p-4 text-left transition-colors hover:bg-gray-50"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              copyCode(deal.code!);
+            }}
+          >
+            <div className="text-gray-600 font-medium">
+              <span className="text-xs uppercase mr-1">CODE:</span>
+              <span className="font-mono">{deal.code}</span>
+            </div>
+            <div className="flex items-center text-xs font-medium text-deal">
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4 mr-1" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 mr-1" />
+                  <span>Copy</span>
+                </>
+              )}
+            </div>
+          </button>
+        ) : isProductDeal ? (
+          <div className="p-4">
+            <a 
+              href={deal.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="deal-button w-full flex items-center justify-center"
+            >
+              <span>Buy Now</span>
+              <Tag className="h-4 w-4 ml-1" />
+            </a>
+          </div>
+        ) : (
+          <div className="p-4">
+            <a 
+              href={deal.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="deal-button w-full flex items-center justify-center"
+            >
+              <span>Get Deal</span>
+              <ExternalLink className="h-4 w-4 ml-1" />
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

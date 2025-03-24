@@ -13,7 +13,7 @@ export interface Deal {
   image?: string;
   category: string;
   usedCount?: number;
-  type?: 'code' | 'link' | 'product'; // Add deal type
+  type?: 'code' | 'link' | 'product'; // Deal type
   price?: string;           // For product deals
   originalPrice?: string;   // For product deals
   productImage?: string;    // For product deals
