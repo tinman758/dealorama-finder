@@ -25,6 +25,10 @@ import ContactPage from "./pages/ContactPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import ScrollToTop from "./components/ScrollToTop";
 import * as React from "react";
+import AccountPage from "./pages/AccountPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import AccountSettingsPage from "./pages/AccountSettingsPage";
+import AccountSecurityPage from "./pages/AccountSecurityPage";
 
 // Move QueryClient creation inside the component
 const App = () => {
@@ -55,6 +59,12 @@ const App = () => {
               
               {/* Auth Callback Route */}
               <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              
+              {/* Account Routes */}
+              <Route path="/account" element={<AccountPage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/account/settings" element={<AccountSettingsPage />} />
+              <Route path="/account/security" element={<AccountSecurityPage />} />
               
               {/* New Routes */}
               <Route path="/about" element={<AboutPage />} />
