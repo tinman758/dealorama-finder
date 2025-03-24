@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
 import { Mail, Lock, ArrowRight, Info, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 import AuthLayout from '@/components/auth/AuthLayout';
 import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
@@ -28,19 +29,15 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }).trim().toLowerCase(),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
   }),
   rememberMe: z.boolean().optional(),
-  // Hidden CSRF token field to protect against CSRF attacks
-  csrfToken: z.string()
 });
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Generate a CSRF token on component mount
-  const [csrfToken] = useState(() => Math.random().toString(36).substring(2));
   const [loginAttempts, setLoginAttempts] = useState(0);
 
   // Define form
@@ -50,7 +47,6 @@ const LoginPage = () => {
       email: "",
       password: "",
       rememberMe: false,
-      csrfToken: csrfToken,
     },
   });
 
@@ -71,23 +67,14 @@ const LoginPage = () => {
     setLoginAttempts(prev => prev + 1);
     
     try {
-      // Verify CSRF token matches (would be verified server-side)
-      if (values.csrfToken !== csrfToken) {
-        throw new Error("Security validation failed");
+      const { error } = await signIn(values.email, values.password);
+      
+      if (error) {
+        console.error("Login error:", error);
+        toast.error("Login failed", {
+          description: error.message || "Please check your credentials and try again"
+        });
       }
-      
-      console.log("Login attempt:", { email: values.email });
-      
-      // In a real implementation, this would be an API call with proper error handling
-      // This is a placeholder for the actual authentication logic
-      
-      toast.success("Login successful!", {
-        description: "Redirecting to your dashboard..."
-      });
-      
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed", {
@@ -120,9 +107,6 @@ const LoginPage = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {/* Hidden CSRF token field */}
-          <input type="hidden" name="csrfToken" value={csrfToken} />
-          
           <FormField
             control={form.control}
             name="email"

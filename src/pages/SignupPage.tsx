@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { toast } from "sonner";
 import { User, Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 import AuthLayout from '@/components/auth/AuthLayout';
 import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
@@ -34,27 +34,23 @@ const formSchema = z.object({
     message: "Please enter a valid email address.",
   }).trim().toLowerCase(),
   password: z.string()
-    .min(8, { message: "Password must be at least 8 characters." })
+    .min(6, { message: "Password must be at least 6 characters." })
     .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
     .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
-    .regex(/[0-9]/, { message: "Password must contain at least one number." })
-    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character." }),
+    .regex(/[0-9]/, { message: "Password must contain at least one number." }),
   confirmPassword: z.string(),
   termsAndConditions: z.boolean().refine(val => val === true, {
     message: "You must agree to the terms and conditions.",
   }),
-  csrfToken: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
 });
 
 const SignupPage = () => {
-  const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  // Generate a CSRF token on component mount
-  const [csrfToken] = useState(() => Math.random().toString(36).substring(2));
 
   // Define form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,7 +61,6 @@ const SignupPage = () => {
       password: "",
       confirmPassword: "",
       termsAndConditions: false,
-      csrfToken: csrfToken,
     },
   });
 
@@ -74,7 +69,7 @@ const SignupPage = () => {
   const getPasswordStrength = () => {
     if (!password) return 0;
     let strength = 0;
-    if (password.length >= 8) strength += 1;
+    if (password.length >= 6) strength += 1;
     if (/[A-Z]/.test(password)) strength += 1;
     if (/[a-z]/.test(password)) strength += 1;
     if (/[0-9]/.test(password)) strength += 1;
@@ -92,7 +87,7 @@ const SignupPage = () => {
     "bg-green-500"
   ];
 
-  // Handle form submission with security considerations
+  // Handle form submission
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Prevent multiple submissions
     if (isSubmitting) return;
@@ -100,35 +95,30 @@ const SignupPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Verify CSRF token (would be verified server-side)
-      if (values.csrfToken !== csrfToken) {
-        throw new Error("Security validation failed");
+      // Sanitize data before sending to backend
+      const { error } = await signUp(
+        values.email, 
+        values.password,
+        { name: values.name.trim() }
+      );
+      
+      if (error) {
+        console.error("Signup error:", error);
+        throw error;
       }
       
-      // Sanitize data before sending to backend
-      const sanitizedData = {
-        name: values.name.trim(),
-        email: values.email.trim().toLowerCase(),
-        // Password would be hashed on the server
-        termsAccepted: values.termsAndConditions
-      };
-      
-      console.log("Signup data:", sanitizedData);
-      
-      // In a real implementation, this would be an API call with proper error handling
-      // This is just a placeholder for the actual registration logic
-      
-      toast.success("Account created successfully!", {
-        description: "Please check your email to verify your account."
-      });
-      
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-    } catch (error) {
+      form.reset();
+    } catch (error: any) {
       console.error("Signup error:", error);
+      const errorMessage = error?.message || "Please try again or contact support if the problem persists";
+      
+      // Display appropriate error message
+      if (error?.message?.includes("already registered")) {
+        errorMessage = "This email is already registered. Please log in instead.";
+      }
+      
       toast.error("Signup failed", {
-        description: "Please try again or contact support if the problem persists"
+        description: errorMessage
       });
     } finally {
       setIsSubmitting(false);
@@ -145,9 +135,6 @@ const SignupPage = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {/* Hidden CSRF token field */}
-          <input type="hidden" name="csrfToken" value={csrfToken} />
-          
           <FormField
             control={form.control}
             name="name"
@@ -209,11 +196,10 @@ const SignupPage = () => {
                       </TooltipTrigger>
                       <TooltipContent>
                         <ul className="text-xs list-disc pl-4 space-y-1">
-                          <li>At least 8 characters</li>
+                          <li>At least 6 characters</li>
                           <li>At least one uppercase letter</li>
                           <li>At least one lowercase letter</li>
                           <li>At least one number</li>
-                          <li>At least one special character</li>
                         </ul>
                       </TooltipContent>
                     </Tooltip>
