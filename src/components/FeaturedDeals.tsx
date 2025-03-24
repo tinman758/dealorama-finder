@@ -9,6 +9,19 @@ const FeaturedDeals = () => {
   const [visibleDeals, setVisibleDeals] = useState(4);
   const featuredDeals = getFeaturedDeals();
   
+  // Ensure at least one product deal is shown in the featured section
+  const hasProductDeal = featuredDeals.slice(0, visibleDeals).some(deal => deal.type === 'product');
+  
+  // If no product deal in visible deals, replace the last visible deal with a product deal
+  let displayDeals = [...featuredDeals.slice(0, visibleDeals)];
+  
+  if (!hasProductDeal) {
+    const productDeal = featuredDeals.find(deal => deal.type === 'product');
+    if (productDeal) {
+      displayDeals[displayDeals.length - 1] = productDeal;
+    }
+  }
+  
   return (
     <section className="py-12 sm:py-16">
       <div className="container-fluid">
@@ -24,7 +37,7 @@ const FeaturedDeals = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {featuredDeals.slice(0, visibleDeals).map(deal => (
+          {displayDeals.map(deal => (
             <div key={deal.id} className="animate-slide-in" style={{ animationDelay: `${parseInt(deal.id) * 100}ms` }}>
               <DealCard deal={deal} featured={true} />
             </div>
