@@ -15,13 +15,21 @@ export function useCategories() {
         
         const { data, error } = await supabase
           .from('categories')
-          .select('id, name, slug, icon, created_at, updated_at')
+          .select('*')
           .order('name');
         
         if (error) throw error;
         
-        setCategories(data || []);
-      } catch (err) {
+        // Map to ensure we're properly formatting our category objects
+        const formattedCategories: Category[] = (data || []).map(item => ({
+          id: item.id,
+          name: item.name,
+          slug: item.slug,
+          icon: item.icon || undefined
+        }));
+        
+        setCategories(formattedCategories);
+      } catch (err: any) {
         console.error('Error fetching categories:', err);
         setError('Failed to load categories');
       } finally {
@@ -47,14 +55,23 @@ export function useCategory(slug: string) {
         
         const { data, error } = await supabase
           .from('categories')
-          .select('id, name, slug, icon, created_at, updated_at')
+          .select('*')
           .eq('slug', slug)
           .single();
         
         if (error) throw error;
         
-        setCategory(data);
-      } catch (err) {
+        // Format the category correctly
+        if (data) {
+          const formattedCategory: Category = {
+            id: data.id,
+            name: data.name,
+            slug: data.slug,
+            icon: data.icon || undefined
+          };
+          setCategory(formattedCategory);
+        }
+      } catch (err: any) {
         console.error('Error fetching category:', err);
         setError('Failed to load category');
       } finally {

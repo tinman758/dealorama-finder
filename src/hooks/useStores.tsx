@@ -18,10 +18,9 @@ export function useStores(options?: {
       try {
         setLoading(true);
         
-        // Use explicit selection to avoid ambiguous column references
         let query = supabase
           .from('stores')
-          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description, created_at, updated_at');
+          .select('*');
         
         if (options?.featured) {
           query = query.eq('featured', true);
@@ -58,7 +57,7 @@ export function useStores(options?: {
         }));
         
         setStores(mappedStores);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching stores:', err);
         setError('Failed to load stores');
       } finally {
@@ -82,10 +81,9 @@ export function useStore(id: string) {
       try {
         setLoading(true);
         
-        // Use explicit selection to avoid ambiguous column references
         const { data, error } = await supabase
           .from('stores')
-          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description, created_at, updated_at')
+          .select('*')
           .eq('id', id)
           .single();
         
@@ -108,7 +106,7 @@ export function useStore(id: string) {
           
           setStore(mappedStore);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching store:', err);
         setError('Failed to load store');
       } finally {
