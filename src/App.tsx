@@ -20,6 +20,7 @@ import HowItWorksPage from "./pages/HowItWorksPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 import ContactPage from "./pages/ContactPage";
+import ScrollToTop from "./components/ScrollToTop";
 import * as React from "react";
 
 // Move QueryClient creation inside the component
@@ -34,6 +35,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/deal/:id" element={<DealDetail />} />
