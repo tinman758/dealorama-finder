@@ -26,7 +26,7 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="relative mx-auto max-w-4xl text-center">
+      <div className="relative mx-auto max-w-4xl text-center px-4 sm:px-6">
         <h1 className="font-display text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
           <span className="block">Save money with the</span>
           <span className="block text-deal">best deals and coupons</span>
