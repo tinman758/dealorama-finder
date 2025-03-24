@@ -10,7 +10,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/hooks/useAuth';
 
 const AdminCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +18,7 @@ const AdminCategories = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const { categories, loading, error } = useCategories();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState<Partial<Category>>({
     name: '',
@@ -82,7 +83,10 @@ const AdminCategories = () => {
         // Add new category
         const { error } = await supabase
           .from('categories')
-          .insert([{ ...categoryData, created_at: new Date().toISOString() }]);
+          .insert([{ 
+            ...categoryData, 
+            created_at: new Date().toISOString()
+          }]);
 
         if (error) throw error;
         toast.success('Category added successfully');
