@@ -5,7 +5,6 @@ import { Check, Copy, ExternalLink, Tag } from 'lucide-react';
 import { Deal } from '../types';
 import { getStoreById } from '../data/stores';
 import { toast } from "@/hooks/use-toast";
-import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface DealCardProps {
   deal: Deal;
@@ -61,30 +60,14 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
         className="block flex-grow" 
         onClick={handleDealClick}
       >
-        {/* Product Image for Product Deals */}
-        {isProductDeal && deal.productImage && (
-          <div className="relative w-full overflow-hidden bg-gray-50 h-36">
-            <div className="w-full h-full flex items-center justify-center p-2">
-              <img 
-                src={deal.productImage} 
-                alt={deal.title} 
-                className="max-h-full max-w-full object-contain" 
-              />
-              <div className="absolute top-2 left-2 bg-deal text-white text-xs font-bold px-2 py-1 rounded">
-                {deal.discount}
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <div className="p-5 flex-grow flex flex-col">
+        <div className="p-4 flex-grow flex flex-col">
           {/* Store Logo */}
           {store && (
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-3">
               <img 
                 src={store.logo} 
                 alt={store.name} 
-                className="h-8 w-8 rounded-full object-contain bg-white p-1 border border-gray-100" 
+                className="h-7 w-7 rounded-full object-contain bg-white p-1 border border-gray-100" 
               />
               <span className="ml-2 text-sm font-medium text-gray-700">{store.name}</span>
               
@@ -98,11 +81,11 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
           )}
           
           {/* Deal Content */}
-          <div className="mb-4 flex-grow">
-            <div className="flex mb-2">
-              {!isProductDeal && <span className="deal-badge">{deal.discount}</span>}
+          <div className="mb-3 flex-grow">
+            <div className="flex mb-1.5">
+              <span className="deal-badge">{deal.discount}</span>
               {formattedDate && (
-                <span className={`text-xs text-gray-500 ${!isProductDeal ? 'ml-auto' : ''}`}>
+                <span className="text-xs text-gray-500 ml-auto">
                   Expires {formattedDate}
                 </span>
               )}
@@ -110,7 +93,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
             <h3 className="font-medium text-gray-900 mb-1 truncate-2-lines">
               {deal.title}
             </h3>
-            <p className="text-sm text-gray-600 truncate-3-lines">
+            <p className="text-sm text-gray-600 truncate-2-lines">
               {deal.description}
             </p>
             
@@ -127,7 +110,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
           
           {/* Used Count */}
           {deal.usedCount && (
-            <div className="text-xs text-gray-500 mb-4">
+            <div className="text-xs text-gray-500 mb-2">
               Used {deal.usedCount.toLocaleString()} times
             </div>
           )}
@@ -142,7 +125,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
         {deal.code ? (
           <button
             id={`deal-code-${deal.id}`}
-            className="deal-code-btn flex items-center justify-between w-full p-4 text-left transition-colors hover:bg-gray-50"
+            className="deal-code-btn flex items-center justify-between w-full p-3 text-left transition-colors hover:bg-gray-50"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -168,7 +151,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
             </div>
           </button>
         ) : isProductDeal ? (
-          <div className="p-4">
+          <div className="p-3">
             <a 
               href={deal.url} 
               target="_blank" 
@@ -181,7 +164,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
             </a>
           </div>
         ) : (
-          <div className="p-4">
+          <div className="p-3">
             <a 
               href={deal.url} 
               target="_blank" 
