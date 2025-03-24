@@ -3,6 +3,34 @@ import { useState, useEffect } from 'react';
 import { Store } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
+// Sample store data
+const sampleStores: Store[] = [
+  {
+    id: "1",
+    name: "Nike",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png",
+    category: "Fashion",
+    featured: true,
+    dealCount: 12,
+    url: "https://www.nike.com",
+    storeType: "both",
+    country: "United States",
+    description: "Nike, Inc. is an American multinational corporation that designs, develops, manufactures, and markets footwear, apparel, equipment, and accessories worldwide."
+  },
+  {
+    id: "2",
+    name: "Amazon",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1200px-Amazon_logo.svg.png",
+    category: "Electronics",
+    featured: true,
+    dealCount: 25,
+    url: "https://www.amazon.com",
+    storeType: "online",
+    country: "United States",
+    description: "Amazon.com, Inc. is an American multinational technology company focusing on e-commerce, cloud computing, online advertising, digital streaming, and artificial intelligence."
+  }
+];
+
 export function useStores(options?: { 
   featured?: boolean, 
   category?: string,
@@ -57,10 +85,13 @@ export function useStores(options?: {
           description: store.description || undefined
         }));
         
-        setStores(mappedStores);
+        // Return the mapped stores, or sample data if no stores were found
+        setStores(mappedStores.length > 0 ? mappedStores : sampleStores);
       } catch (err) {
         console.error('Error fetching stores:', err);
         setError('Failed to load stores');
+        // Return sample data if there was an error
+        setStores(sampleStores);
       } finally {
         setLoading(false);
       }
@@ -107,10 +138,22 @@ export function useStore(id: string) {
           };
           
           setStore(mappedStore);
+        } else {
+          // Find the store in sample data if not found in database
+          const sampleStore = sampleStores.find(s => s.id === id);
+          if (sampleStore) {
+            setStore(sampleStore);
+          }
         }
       } catch (err) {
         console.error('Error fetching store:', err);
         setError('Failed to load store');
+        
+        // Find the store in sample data if there was an error
+        const sampleStore = sampleStores.find(s => s.id === id);
+        if (sampleStore) {
+          setStore(sampleStore);
+        }
       } finally {
         setLoading(false);
       }
