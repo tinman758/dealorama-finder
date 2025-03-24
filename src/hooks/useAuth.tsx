@@ -12,7 +12,7 @@ type AuthContextType = {
   signUp: (email: string, password: string, meta?: { name?: string }) => Promise<{ error: AuthError | null }>
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  signInWithSocial: (provider: Provider) => Promise<void>
+  signInWithSocial: (provider: Provider) => Promise<{ error: AuthError | null } | undefined>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -113,8 +113,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           description: error.message
         })
       }
+      
+      return { error }
     } catch (error) {
       console.error(`Error signing in with ${provider}:`, error)
+      return { error: error as AuthError }
     }
   }
 
