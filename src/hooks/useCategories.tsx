@@ -13,6 +13,7 @@ export function useCategories() {
       try {
         setLoading(true);
         
+        // Use explicit table reference to avoid ambiguous column errors
         const { data, error } = await supabase
           .from('categories')
           .select('id, name, slug, icon, created_at, updated_at')
@@ -45,6 +46,7 @@ export function useCategory(slug: string) {
       try {
         setLoading(true);
         
+        // Use explicit table reference to avoid ambiguous column errors
         const { data, error } = await supabase
           .from('categories')
           .select('id, name, slug, icon, created_at, updated_at')
