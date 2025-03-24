@@ -16,3 +16,22 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storageKey: 'penny-pinchers-auth-storage'
   }
 });
+
+// Helper function to check if the user is admin
+export const isAdmin = async (userId: string | undefined): Promise<boolean> => {
+  if (!userId) return false;
+  
+  try {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('role')
+      .eq('user_id', userId)
+      .single();
+    
+    if (error) throw error;
+    return !!data;
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+};

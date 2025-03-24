@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Carousel, 
   CarouselContent, 
@@ -9,25 +9,72 @@ import {
   type CarouselApi
 } from '@/components/ui/carousel';
 import AdvertisementBanner from './AdvertisementBanner';
+import { supabase } from '@/integrations/supabase/client';
 
 // Types for the ad data
 interface AdItem {
   id: string;
   title: string;
   description: string;
-  ctaText: string;
-  ctaLink: string;
-  bgColor?: string;
-  imageUrl?: string;
+  cta_text: string;
+  cta_link: string;
+  bg_color?: string;
+  image_url?: string;
 }
 
 interface AdsCarouselProps {
-  ads: AdItem[];
+  ads?: AdItem[]; // Make ads optional to support both prop-based and database-based usage
 }
 
-const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
+const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads: propAds }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dbAds, setDbAds] = useState<AdItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  // Use either the provided ads or fetch from the database
+  const ads = propAds || dbAds;
+
+  // Fetch ads from the database if no ads were provided via props
+  useEffect(() => {
+    if (!propAds) {
+      const fetchAds = async () => {
+        setLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('advertisements')
+            .select('*')
+            .eq('is_active', true)
+            .order('display_order', { ascending: true });
+
+          if (error) {
+            throw error;
+          }
+
+          // Map database fields to component prop format
+          const formattedAds = data.map(ad => ({
+            id: ad.id,
+            title: ad.title,
+            description: ad.description,
+            cta_text: ad.cta_text,
+            cta_link: ad.cta_link,
+            bg_color: ad.bg_color,
+            image_url: ad.image_url
+          }));
+          
+          setDbAds(formattedAds);
+        } catch (err) {
+          console.error('Error fetching advertisements:', err);
+          setError('Failed to load advertisements');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchAds();
+    }
+  }, [propAds]);
 
   React.useEffect(() => {
     if (!api) {
@@ -46,6 +93,24 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
     };
   }, [api]);
 
+  // Don't render anything if there are no ads to display
+  if (loading) {
+    return (
+      <div className="w-full h-[300px] bg-gray-100 rounded-xl flex items-center justify-center">
+        <div className="animate-pulse">Loading advertisements...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error(error);
+    return null; // Don't show anything on error
+  }
+
+  if (!ads || ads.length === 0) {
+    return null; // Don't show anything if no ads
+  }
+
   return (
     <div className="relative rounded-xl overflow-hidden">
       <Carousel 
@@ -62,10 +127,10 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
               <AdvertisementBanner
                 title={ad.title}
                 description={ad.description}
-                ctaText={ad.ctaText}
-                ctaLink={ad.ctaLink}
-                bgColor={ad.bgColor}
-                imageUrl={ad.imageUrl}
+                ctaText={ad.cta_text}
+                ctaLink={ad.cta_link}
+                bgColor={ad.bg_color}
+                imageUrl={ad.image_url}
               />
             </CarouselItem>
           ))}
