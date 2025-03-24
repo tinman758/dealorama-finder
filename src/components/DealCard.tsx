@@ -1,19 +1,60 @@
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Check, Copy, ExternalLink, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Check, Copy, ExternalLink, Heart, Tag } from 'lucide-react';
 import { Deal } from '../types';
 import { getStoreById } from '../data/stores';
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from '@/hooks/useAuth';
 
 interface DealCardProps {
   deal: Deal;
   featured?: boolean;
+  onFavoriteToggle?: (dealId: string, isFavorited: boolean) => void;
+  initiallyFavorited?: boolean;
 }
 
-const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
+const DealCard: React.FC<DealCardProps> = ({ 
+  deal, 
+  featured = false, 
+  onFavoriteToggle,
+  initiallyFavorited = false
+}) => {
   const store = getStoreById(deal.storeId);
   const [copied, setCopied] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(initiallyFavorited);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  // Check if deal is favorited when component mounts
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('deal_id', deal.id)
+            .single();
+            
+          if (!error && data) {
+            setIsFavorited(true);
+          }
+        } catch (error) {
+          console.error('Error checking favorite status:', error);
+        }
+      }
+    };
+    
+    if (!initiallyFavorited) {
+      checkFavoriteStatus();
+    } else {
+      setIsFavorited(true);
+    }
+  }, [user, deal.id, initiallyFavorited]);
   
   const formattedDate = deal.expiryDate 
     ? new Date(deal.expiryDate).toLocaleDateString('en-US', { 
@@ -38,9 +79,73 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
   const handleDealClick = (e: React.MouseEvent) => {
     // If this is a code deal and we're clicking the card (not the code button),
     // prevent navigation and show the code
-    if (deal.code && !e.currentTarget.matches('.deal-code-btn, .deal-code-btn *')) {
+    if (deal.code && !e.currentTarget.matches('.deal-code-btn, .deal-code-btn *, .favorite-btn, .favorite-btn *')) {
       e.preventDefault();
       document.getElementById(`deal-code-${deal.id}`)?.click();
+    }
+  };
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to save favorites",
+        variant: "destructive"
+      });
+      navigate('/login');
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      if (isFavorited) {
+        // Remove from favorites
+        const { error } = await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('deal_id', deal.id);
+          
+        if (error) throw error;
+        
+        setIsFavorited(false);
+        toast({
+          title: "Removed from favorites",
+          description: "Deal has been removed from your favorites"
+        });
+      } else {
+        // Add to favorites
+        const { error } = await supabase
+          .from('favorites')
+          .insert({ user_id: user.id, deal_id: deal.id });
+          
+        if (error) throw error;
+        
+        setIsFavorited(true);
+        toast({
+          title: "Added to favorites",
+          description: "Deal has been added to your favorites"
+        });
+      }
+      
+      // Notify parent if callback is provided
+      if (onFavoriteToggle) {
+        onFavoriteToggle(deal.id, !isFavorited);
+      }
+      
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem updating your favorites",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,6 +160,22 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
         flex flex-col h-full
       `}
     >
+      {/* Favorite button */}
+      <button
+        className="favorite-btn absolute top-3 right-3 z-10 p-1.5 bg-white/70 hover:bg-white rounded-full shadow-sm transition-colors"
+        onClick={toggleFavorite}
+        disabled={isLoading}
+        aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+      >
+        <Heart 
+          className={`h-5 w-5 ${
+            isFavorited 
+              ? 'text-red-500 fill-red-500' 
+              : 'text-gray-400 hover:text-gray-600'
+          } ${isLoading ? 'opacity-50' : ''}`} 
+        />
+      </button>
+      
       <Link 
         to={`/deal/${deal.id}`} 
         className="block flex-grow" 

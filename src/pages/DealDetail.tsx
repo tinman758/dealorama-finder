@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Copy, Check, ExternalLink, Clock, ArrowLeft } from 'lucide-react';
+import { Copy, Check, ExternalLink, Clock, ArrowLeft, Heart } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -9,6 +9,8 @@ import DealCard from '@/components/DealCard';
 import { getDealById, getDealsForStore } from '@/data/deals';
 import { getStoreById } from '@/data/stores';
 import { Deal } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const DealDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +18,9 @@ const DealDetail = () => {
   const [relatedDeals, setRelatedDeals] = useState<Deal[]>([]);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+  const { user } = useAuth();
   
   useEffect(() => {
     if (id) {
@@ -38,6 +43,30 @@ const DealDetail = () => {
     }
   }, [id]);
   
+  // Check if the deal is favorited
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!user || !id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('favorites')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('deal_id', id)
+          .single();
+          
+        if (!error && data) {
+          setIsFavorited(true);
+        }
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+      }
+    };
+    
+    checkFavoriteStatus();
+  }, [user, id]);
+  
   const store = deal ? getStoreById(deal.storeId) : null;
 
   const copyCode = (code: string) => {
@@ -51,6 +80,62 @@ const DealDetail = () => {
     setTimeout(() => {
       setCopied(false);
     }, 2000);
+  };
+  
+  const toggleFavorite = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to save favorites",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!id) return;
+    
+    setFavLoading(true);
+    
+    try {
+      if (isFavorited) {
+        // Remove from favorites
+        const { error } = await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('deal_id', id);
+          
+        if (error) throw error;
+        
+        setIsFavorited(false);
+        toast({
+          title: "Removed from favorites",
+          description: "Deal has been removed from your favorites"
+        });
+      } else {
+        // Add to favorites
+        const { error } = await supabase
+          .from('favorites')
+          .insert({ user_id: user.id, deal_id: id });
+          
+        if (error) throw error;
+        
+        setIsFavorited(true);
+        toast({
+          title: "Added to favorites",
+          description: "Deal has been added to your favorites"
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem updating your favorites",
+        variant: "destructive"
+      });
+    } finally {
+      setFavLoading(false);
+    }
   };
   
   if (loading) {
@@ -133,7 +218,25 @@ const DealDetail = () => {
           
           {/* Deal Title */}
           <div className="mb-8 animate-slide-up">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{deal.title}</h1>
+            <div className="flex items-start justify-between">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{deal.title}</h1>
+              
+              {user && (
+                <button
+                  className="flex-shrink-0 ml-4 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+                  onClick={toggleFavorite}
+                  disabled={favLoading}
+                >
+                  <Heart 
+                    className={`h-6 w-6 ${
+                      isFavorited 
+                        ? 'text-red-500 fill-red-500' 
+                        : 'text-gray-400 hover:text-gray-600'
+                    } ${favLoading ? 'opacity-50' : ''}`} 
+                  />
+                </button>
+              )}
+            </div>
             
             <div className="flex flex-wrap items-center gap-3">
               {deal.verified && (
