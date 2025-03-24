@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -59,7 +58,6 @@ const AdminStores = () => {
 
   const handleSelectChange = (name: string, value: string) => {
     if (name === 'categoryId') {
-      // When category ID is selected, also update the category name for backward compatibility
       const selectedCategory = categories.find(cat => cat.id === value);
       setFormData(prev => ({ 
         ...prev, 
@@ -93,7 +91,6 @@ const AdminStores = () => {
       };
 
       if (editingStore) {
-        // Update existing store
         const { error } = await supabase
           .from('stores')
           .update(storeData)
@@ -102,16 +99,17 @@ const AdminStores = () => {
         if (error) throw error;
         toast.success('Store updated successfully');
       } else {
-        // Add new store
         const { error } = await supabase
           .from('stores')
-          .insert([{ ...storeData, created_at: new Date().toISOString() }]);
+          .insert([{ 
+            ...storeData, 
+            created_at: new Date().toISOString() 
+          }]);
 
         if (error) throw error;
         toast.success('Store added successfully');
       }
 
-      // Reset form and close dialog
       resetForm();
       setShowAddDialog(false);
     } catch (error: any) {
@@ -180,7 +178,6 @@ const AdminStores = () => {
     return <div className="p-4 text-red-500">Error loading stores: {error}</div>;
   }
 
-  // Function to get category name from ID
   const getCategoryNameById = (categoryId: string | undefined) => {
     if (!categoryId) return 'Unknown';
     const category = categories.find(cat => cat.id === categoryId);
