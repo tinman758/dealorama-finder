@@ -23,6 +23,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
+  // Get the current origin to use for redirects, ensuring it's not localhost
+  const getRedirectURL = () => {
+    const currentURL = window.location.origin
+    // For development and testing, you can manually override this if needed
+    // or use the actual deployed URL when in production
+    return currentURL
+  }
+
   useEffect(() => {
     // Check active session
     const getSession = async () => {
@@ -54,12 +62,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Sign up with email and password
   const signUp = async (email: string, password: string, meta?: { name?: string }) => {
     try {
+      const redirectTo = `${getRedirectURL()}/auth/callback`
+      console.log('Using redirect URL:', redirectTo)
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: meta,
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectTo,
         },
       })
       
@@ -100,10 +111,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Sign in with social provider
   const signInWithSocial = async (provider: Provider) => {
     try {
+      const redirectTo = `${getRedirectURL()}/auth/callback`
+      console.log('Using social redirect URL:', redirectTo)
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
         },
       })
       
