@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 type PasswordFormValues = {
   currentPassword: string;
@@ -52,84 +54,92 @@ const AccountSecurityPage = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 flex justify-center items-center min-h-[calc(100vh-16rem)]">
-        <div className="w-16 h-16 border-4 border-t-deal rounded-full animate-spin"></div>
-      </div>
+      <>
+        <Navbar />
+        <div className="container mx-auto p-6 flex justify-center items-center min-h-[calc(100vh-16rem)]">
+          <div className="w-16 h-16 border-4 border-t-deal rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </>
     );
   }
 
   if (!user) return null;
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-8">Security Settings</h1>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Change Password</CardTitle>
-          <CardDescription>
-            Update your account password
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                {...register('currentPassword', { required: 'Current password is required' })}
-                placeholder="Enter your current password"
-              />
-              {errors.currentPassword && (
-                <p className="text-sm text-red-500">{errors.currentPassword.message}</p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                {...register('newPassword', { 
-                  required: 'New password is required',
-                  minLength: {
-                    value: 8,
-                    message: 'Password must be at least 8 characters'
-                  }
-                })}
-                placeholder="Enter new password"
-              />
-              {errors.newPassword && (
-                <p className="text-sm text-red-500">{errors.newPassword.message}</p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                {...register('confirmPassword', { 
-                  required: 'Please confirm your password',
-                  validate: (value) => {
-                    return value === watch('newPassword') || 'Passwords do not match';
-                  }
-                })}
-                placeholder="Confirm new password"
-              />
-              {errors.confirmPassword && (
-                <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
-              )}
-            </div>
-            
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Updating..." : "Update Password"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <Navbar />
+      <div className="container mx-auto p-6 max-w-5xl">
+        <h1 className="text-3xl font-bold mb-8">Security Settings</h1>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Change Password</CardTitle>
+            <CardDescription>
+              Update your account password
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  {...register('currentPassword', { required: 'Current password is required' })}
+                  placeholder="Enter your current password"
+                />
+                {errors.currentPassword && (
+                  <p className="text-sm text-red-500">{errors.currentPassword.message}</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  {...register('newPassword', { 
+                    required: 'New password is required',
+                    minLength: {
+                      value: 8,
+                      message: 'Password must be at least 8 characters'
+                    }
+                  })}
+                  placeholder="Enter new password"
+                />
+                {errors.newPassword && (
+                  <p className="text-sm text-red-500">{errors.newPassword.message}</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  {...register('confirmPassword', { 
+                    required: 'Please confirm your password',
+                    validate: (value) => {
+                      return value === watch('newPassword') || 'Passwords do not match';
+                    }
+                  })}
+                  placeholder="Confirm new password"
+                />
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+                )}
+              </div>
+              
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Updating..." : "Update Password"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+      <Footer />
+    </>
   );
 };
 

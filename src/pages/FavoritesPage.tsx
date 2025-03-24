@@ -11,6 +11,8 @@ import { getDealById } from '@/data/deals';
 import DealCard from '@/components/DealCard';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const FavoritesPage = () => {
   const { user, isLoading } = useAuth();
@@ -94,61 +96,69 @@ const FavoritesPage = () => {
 
   if (isLoading || isLoadingFavorites) {
     return (
-      <div className="container mx-auto p-6 flex justify-center items-center min-h-[calc(100vh-16rem)]">
-        <div className="w-16 h-16 border-4 border-t-deal rounded-full animate-spin"></div>
-      </div>
+      <>
+        <Navbar />
+        <div className="container mx-auto p-6 flex justify-center items-center min-h-[calc(100vh-16rem)]">
+          <div className="w-16 h-16 border-4 border-t-deal rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </>
     );
   }
 
   if (!user) return null;
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-8">My Favorites</h1>
-      
-      {favoriteDeals.length > 0 ? (
-        <>
-          <div className="mb-6 text-gray-600">
-            You have {favoriteDeals.length} saved {favoriteDeals.length === 1 ? 'deal' : 'deals'}.
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            {favoriteDeals.map(deal => (
-              <DealCard 
-                key={deal.id} 
-                deal={deal} 
-                initiallyFavorited={true}
-                onFavoriteToggle={handleFavoriteToggle}
-              />
-            ))}
-          </div>
-        </>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Heart className="mr-2 h-5 w-5 text-red-500" />
-              Saved Deals
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <Heart className="h-16 w-16 mx-auto text-muted-foreground opacity-20" />
-              <p className="mt-4 text-muted-foreground">You haven't saved any deals yet.</p>
-              <p className="text-sm text-muted-foreground mb-6">
-                Click the heart icon on any deal to save it for later.
-              </p>
-              <Button asChild>
-                <Link to="/deals" className="flex items-center gap-2">
-                  <ShoppingBag className="h-4 w-4" />
-                  Browse Deals
-                </Link>
-              </Button>
+    <>
+      <Navbar />
+      <div className="container mx-auto p-6 max-w-5xl">
+        <h1 className="text-3xl font-bold mb-8">My Favorites</h1>
+        
+        {favoriteDeals.length > 0 ? (
+          <>
+            <div className="mb-6 text-gray-600">
+              You have {favoriteDeals.length} saved {favoriteDeals.length === 1 ? 'deal' : 'deals'}.
             </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+              {favoriteDeals.map(deal => (
+                <DealCard 
+                  key={deal.id} 
+                  deal={deal} 
+                  initiallyFavorited={true}
+                  onFavoriteToggle={handleFavoriteToggle}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Heart className="mr-2 h-5 w-5 text-red-500" />
+                Saved Deals
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Heart className="h-16 w-16 mx-auto text-muted-foreground opacity-20" />
+                <p className="mt-4 text-muted-foreground">You haven't saved any deals yet.</p>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Click the heart icon on any deal to save it for later.
+                </p>
+                <Button asChild>
+                  <Link to="/deals" className="flex items-center gap-2">
+                    <ShoppingBag className="h-4 w-4" />
+                    Browse Deals
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+      <Footer />
+    </>
   );
 };
 
