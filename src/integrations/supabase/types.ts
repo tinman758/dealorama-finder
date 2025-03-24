@@ -72,6 +72,99 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          created_at: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      deals: {
+        Row: {
+          category: string
+          code: string | null
+          created_at: string | null
+          description: string
+          discount: string
+          expiry_date: string | null
+          featured: boolean | null
+          id: string
+          image: string | null
+          original_price: string | null
+          price: string | null
+          product_image: string | null
+          store_id: string
+          title: string
+          type: string | null
+          updated_at: string | null
+          url: string
+          used_count: number | null
+          verified: boolean | null
+        }
+        Insert: {
+          category: string
+          code?: string | null
+          created_at?: string | null
+          description: string
+          discount: string
+          expiry_date?: string | null
+          featured?: boolean | null
+          id?: string
+          image?: string | null
+          original_price?: string | null
+          price?: string | null
+          product_image?: string | null
+          store_id: string
+          title: string
+          type?: string | null
+          updated_at?: string | null
+          url: string
+          used_count?: number | null
+          verified?: boolean | null
+        }
+        Update: {
+          category?: string
+          code?: string | null
+          created_at?: string | null
+          description?: string
+          discount?: string
+          expiry_date?: string | null
+          featured?: boolean | null
+          id?: string
+          image?: string | null
+          original_price?: string | null
+          price?: string | null
+          product_image?: string | null
+          store_id?: string
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+          url?: string
+          used_count?: number | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -91,11 +184,90 @@ export type Database = {
           id?: string
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stores: {
+        Row: {
+          category: string
+          country: string | null
+          created_at: string | null
+          deal_count: number | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          logo: string
+          name: string
+          store_type: string | null
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          category: string
+          country?: string | null
+          created_at?: string | null
+          deal_count?: number | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          logo: string
+          name: string
+          store_type?: string | null
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          category?: string
+          country?: string | null
+          created_at?: string | null
+          deal_count?: number | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          logo?: string
+          name?: string
+          store_type?: string | null
+          updated_at?: string | null
+          url?: string
+        }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      user_profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string | null
+          is_admin: boolean | null
+          last_sign_in_at: string | null
+          name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          is_admin?: never
+          last_sign_in_at?: string | null
+          name?: never
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          is_admin?: never
+          last_sign_in_at?: string | null
+          name?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       is_admin: {
