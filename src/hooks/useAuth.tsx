@@ -12,6 +12,8 @@ type AuthContextType = {
   signUp: (email: string, password: string, meta?: { name?: string }) => Promise<{ error: AuthError | null }>
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
+  makeAdmin: (userId: string, role?: string) => Promise<boolean>
+  removeAdmin: (adminId: string) => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -112,6 +114,64 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut()
     navigate('/login')
   }
+  
+  // Make a user an admin
+  const makeAdmin = async (userId: string, role: string = 'editor') => {
+    try {
+      if (!user) {
+        toast.error('You must be logged in to perform this action')
+        return false
+      }
+      
+      const { error } = await supabase
+        .from('admin_users')
+        .insert({
+          user_id: userId,
+          role: role
+        })
+        
+      if (error) {
+        console.error('Error making user admin:', error)
+        toast.error('Failed to make user an admin')
+        return false
+      }
+      
+      toast.success('User successfully made an admin')
+      return true
+    } catch (error) {
+      console.error('Error in makeAdmin:', error)
+      toast.error('An error occurred while making user an admin')
+      return false
+    }
+  }
+  
+  // Remove admin privileges
+  const removeAdmin = async (adminId: string) => {
+    try {
+      if (!user) {
+        toast.error('You must be logged in to perform this action')
+        return false
+      }
+      
+      const { error } = await supabase
+        .from('admin_users')
+        .delete()
+        .eq('id', adminId)
+        
+      if (error) {
+        console.error('Error removing admin:', error)
+        toast.error('Failed to remove admin privileges')
+        return false
+      }
+      
+      toast.success('Admin privileges successfully removed')
+      return true
+    } catch (error) {
+      console.error('Error in removeAdmin:', error)
+      toast.error('An error occurred while removing admin privileges')
+      return false
+    }
+  }
 
   const value = {
     user,
@@ -120,6 +180,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signUp,
     signIn,
     signOut,
+    makeAdmin,
+    removeAdmin
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

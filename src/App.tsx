@@ -30,6 +30,15 @@ import FavoritesPage from "./pages/FavoritesPage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
 import AccountSecurityPage from "./pages/AccountSecurityPage";
 
+// Admin Dashboard imports
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminDeals from "./pages/admin/AdminDeals";
+import AdminStores from "./pages/admin/AdminStores";
+import AdminCategories from "./pages/admin/AdminCategories";
+import AdminAdmins from "./pages/admin/AdminAdmins";
+
 // Move QueryClient creation inside the component
 const App = () => {
   // Create a client inside the function component
@@ -65,6 +74,16 @@ const App = () => {
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="/account/settings" element={<AccountSettingsPage />} />
               <Route path="/account/security" element={<AccountSecurityPage />} />
+              
+              {/* Admin Dashboard Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="deals" element={<AdminDeals />} />
+                <Route path="stores" element={<AdminStores />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="admins" element={<AdminAdmins />} />
+              </Route>
               
               {/* New Routes */}
               <Route path="/about" element={<AboutPage />} />
