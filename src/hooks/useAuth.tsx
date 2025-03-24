@@ -95,12 +95,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           description: 'Welcome back to DealFinder!',
           position: 'top-center',
           duration: 2000, // Reduced for faster fadeaway
-          className: 'bg-gradient-to-r from-deal to-deal-dark text-white', // Changed from text-white/90 to text-white
+          className: 'bg-white text-deal-dark shadow-md', // Light background with dark blue text
           icon: '👋',
           style: {
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            border: '1px solid rgba(23, 105, 232, 0.2)',
             borderRadius: '0.75rem',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)'
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)'
           },
           closeButton: true, // Enable close button
         });
