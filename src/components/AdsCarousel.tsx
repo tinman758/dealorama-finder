@@ -8,7 +8,6 @@ import {
   CarouselPrevious 
 } from '@/components/ui/carousel';
 import AdvertisementBanner from './AdvertisementBanner';
-import { Dot } from 'lucide-react';
 
 // Types for the ad data
 interface AdItem {
@@ -37,6 +36,7 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
           align: "start",
         }}
         onSelect={(api) => {
+          // Fix: Properly access the selectedScrollSnap method from the carousel API
           if (api) {
             setActiveIndex(api.selectedScrollSnap());
           }

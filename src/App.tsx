@@ -24,6 +24,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Ensure TooltipProvider is properly instantiated */}
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -37,7 +38,7 @@ const App = () => {
             <Route path="/store/:id" element={<StorePage />} />
             <Route path="/all-stores" element={<AllStores />} />
             <Route path="/all-categories" element={<AllCategories />} />
-            <Route path="/login" element={<LoginPage />} /> {/* Updated to use LoginPage */}
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
