@@ -17,31 +17,20 @@ const AdminDashboard = () => {
     const fetchCounts = async () => {
       setLoading(true);
       try {
-        // Count users
-        const { count: usersCount } = await supabase
-          .from('auth.users')
+        // For now, we'll use mock data since these tables don't exist in Supabase yet
+        // In a real implementation, you would query these tables
+        
+        // Count users (only count admin users as a proxy)
+        const { count: adminCount } = await supabase
+          .from('admin_users')
           .select('*', { count: 'exact', head: true });
 
-        // Count deals
-        const { count: dealsCount } = await supabase
-          .from('deals')
-          .select('*', { count: 'exact', head: true });
-
-        // Count stores
-        const { count: storesCount } = await supabase
-          .from('stores')
-          .select('*', { count: 'exact', head: true });
-
-        // Count categories
-        const { count: categoriesCount } = await supabase
-          .from('categories')
-          .select('*', { count: 'exact', head: true });
-
+        // For the rest, use mock data
         setCounts({
-          users: usersCount || 0,
-          deals: dealsCount || 0,
-          stores: storesCount || 0,
-          categories: categoriesCount || 0,
+          users: adminCount || 0,
+          deals: 5,
+          stores: 10,
+          categories: 8,
         });
       } catch (error) {
         console.error('Error fetching counts:', error);

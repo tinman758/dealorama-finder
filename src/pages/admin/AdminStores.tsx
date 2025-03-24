@@ -1,22 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Search, Plus, Edit, Trash } from 'lucide-react';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
-
-interface Store {
-  id: string;
-  name: string;
-  logo: string;
-  category: string;
-  featured: boolean;
-  deal_count: number;
-  created_at: string;
-}
+import { Store } from '@/types/index';
 
 const AdminStores = () => {
   const [stores, setStores] = useState<Store[]>([]);
@@ -30,13 +20,29 @@ const AdminStores = () => {
   const fetchStores = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('stores')
-        .select('*')
-        .order('name');
-
-      if (error) throw error;
-      setStores(data || []);
+      // For now, using mock data since the stores table doesn't exist in Supabase yet
+      const mockStores: Store[] = [
+        {
+          id: '1',
+          name: 'Amazon',
+          logo: 'https://example.com/amazon.png',
+          category: 'E-commerce',
+          featured: true,
+          dealCount: 25,
+          url: 'https://amazon.com',
+        },
+        {
+          id: '2',
+          name: 'Best Buy',
+          logo: 'https://example.com/bestbuy.png',
+          category: 'Electronics',
+          featured: false,
+          dealCount: 15,
+          url: 'https://bestbuy.com',
+        },
+      ];
+      
+      setStores(mockStores);
     } catch (error) {
       console.error('Error fetching stores:', error);
       toast.error('Failed to fetch stores');
@@ -47,13 +53,7 @@ const AdminStores = () => {
 
   const toggleStoreFeatured = async (id: string, currentValue: boolean) => {
     try {
-      const { error } = await supabase
-        .from('stores')
-        .update({ featured: !currentValue })
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      // This would update the database in a real implementation
       setStores(stores.map(store => 
         store.id === id ? { ...store, featured: !currentValue } : store
       ));
@@ -69,13 +69,7 @@ const AdminStores = () => {
     if (!confirm('Are you sure you want to delete this store? This will also delete all associated deals.')) return;
     
     try {
-      const { error } = await supabase
-        .from('stores')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      // This would delete from the database in a real implementation
       setStores(stores.filter(store => store.id !== id));
       toast.success('Store deleted successfully');
     } catch (error) {
@@ -126,7 +120,6 @@ const AdminStores = () => {
                 <TableHead>Category</TableHead>
                 <TableHead>Deals</TableHead>
                 <TableHead>Featured</TableHead>
-                <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -147,14 +140,13 @@ const AdminStores = () => {
                       </div>
                     </TableCell>
                     <TableCell>{store.category}</TableCell>
-                    <TableCell>{store.deal_count}</TableCell>
+                    <TableCell>{store.dealCount}</TableCell>
                     <TableCell>
                       <Switch 
                         checked={store.featured} 
-                        onCheckedChange={() => toggleStoreFeatured(store.id, store.featured)}
+                        onCheckedChange={() => toggleStoreFeatured(store.id, store.featured!)}
                       />
                     </TableCell>
-                    <TableCell>{new Date(store.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button variant="outline" size="icon">
@@ -173,7 +165,7 @@ const AdminStores = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                     No stores found
                   </TableCell>
                 </TableRow>

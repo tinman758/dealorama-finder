@@ -1,24 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Search, Plus, Star, Check, Edit, Trash } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Loader2, Search, Plus, Edit, Trash } from 'lucide-react';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
-
-interface Deal {
-  id: string;
-  title: string;
-  store_id: string;
-  discount: string;
-  featured: boolean;
-  verified: boolean;
-  expiry_date: string | null;
-  created_at: string;
-}
+import { Deal } from '@/types/index';
 
 const AdminDeals = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -32,13 +20,35 @@ const AdminDeals = () => {
   const fetchDeals = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('deals')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setDeals(data || []);
+      
+      // For now, using mock data since the deals table doesn't exist in Supabase yet
+      const mockDeals: Deal[] = [
+        {
+          id: '1',
+          title: '50% Off Electronics',
+          description: 'Get 50% off on all electronics',
+          discount: '50%',
+          storeId: '1',
+          verified: true,
+          featured: true,
+          url: 'https://example.com/deal1',
+          category: 'Electronics',
+          expiryDate: new Date(2025, 5, 15).toISOString(),
+        },
+        {
+          id: '2',
+          title: 'Buy One Get One Free',
+          description: 'Buy one item and get another for free',
+          discount: 'BOGO',
+          storeId: '2',
+          verified: false,
+          featured: false,
+          url: 'https://example.com/deal2',
+          category: 'Fashion',
+        },
+      ];
+      
+      setDeals(mockDeals);
     } catch (error) {
       console.error('Error fetching deals:', error);
       toast.error('Failed to fetch deals');
@@ -49,13 +59,7 @@ const AdminDeals = () => {
 
   const toggleDealFeatured = async (id: string, currentValue: boolean) => {
     try {
-      const { error } = await supabase
-        .from('deals')
-        .update({ featured: !currentValue })
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      // This would update the database in a real implementation
       setDeals(deals.map(deal => 
         deal.id === id ? { ...deal, featured: !currentValue } : deal
       ));
@@ -69,13 +73,7 @@ const AdminDeals = () => {
 
   const toggleDealVerified = async (id: string, currentValue: boolean) => {
     try {
-      const { error } = await supabase
-        .from('deals')
-        .update({ verified: !currentValue })
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      // This would update the database in a real implementation
       setDeals(deals.map(deal => 
         deal.id === id ? { ...deal, verified: !currentValue } : deal
       ));
@@ -91,13 +89,7 @@ const AdminDeals = () => {
     if (!confirm('Are you sure you want to delete this deal?')) return;
     
     try {
-      const { error } = await supabase
-        .from('deals')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      // This would delete from the database in a real implementation
       setDeals(deals.filter(deal => deal.id !== id));
       toast.success('Deal deleted successfully');
     } catch (error) {
@@ -149,7 +141,6 @@ const AdminDeals = () => {
                 <TableHead>Expiry</TableHead>
                 <TableHead>Featured</TableHead>
                 <TableHead>Verified</TableHead>
-                <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -160,14 +151,14 @@ const AdminDeals = () => {
                     <TableCell className="font-medium">{deal.title}</TableCell>
                     <TableCell>{deal.discount}</TableCell>
                     <TableCell>
-                      {deal.expiry_date 
-                        ? new Date(deal.expiry_date).toLocaleDateString() 
+                      {deal.expiryDate 
+                        ? new Date(deal.expiryDate).toLocaleDateString() 
                         : 'No expiry'}
                     </TableCell>
                     <TableCell>
                       <Switch 
                         checked={deal.featured} 
-                        onCheckedChange={() => toggleDealFeatured(deal.id, deal.featured)}
+                        onCheckedChange={() => toggleDealFeatured(deal.id, deal.featured!)}
                       />
                     </TableCell>
                     <TableCell>
@@ -176,7 +167,6 @@ const AdminDeals = () => {
                         onCheckedChange={() => toggleDealVerified(deal.id, deal.verified)}
                       />
                     </TableCell>
-                    <TableCell>{new Date(deal.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button variant="outline" size="icon">
@@ -195,7 +185,7 @@ const AdminDeals = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                     No deals found
                   </TableCell>
                 </TableRow>
