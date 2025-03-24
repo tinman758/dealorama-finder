@@ -115,8 +115,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    navigate('/login')
+    try {
+      console.log("Attempting to sign out...")
+      
+      // Clear local state first
+      setUser(null)
+      setSession(null)
+      
+      // Call Supabase signOut
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        console.error("Error signing out:", error)
+        toast.error("Failed to sign out", {
+          description: error.message
+        })
+        return
+      }
+      
+      console.log("Sign out successful")
+      toast.success("Successfully signed out")
+      
+      // Navigate to login page after successful sign out
+      navigate('/login', { replace: true })
+    } catch (err) {
+      console.error("Unexpected error during sign out:", err)
+      toast.error("An unexpected error occurred while signing out")
+    }
   }
 
   const makeAdmin = async (userId: string, role: string = 'editor') => {
