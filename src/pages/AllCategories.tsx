@@ -1,26 +1,81 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCategories } from '@/hooks/useCategories';
 import { Button } from '@/components/ui/button';
 import { Star, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const AllCategories = () => {
   const { categories, loading, error } = useCategories();
   const [showFeatured, setShowFeatured] = useState(false);
+  const [storeCounts, setStoreCounts] = useState<Record<string, number>>({});
+  const [featuredStoreCounts, setFeaturedStoreCounts] = useState<Record<string, number>>({});
+  const [loadingCounts, setLoadingCounts] = useState(true);
   
-  // This would ideally come from the database in a future implementation
+  // Fetch store counts for each category
+  useEffect(() => {
+    const fetchStoreCounts = async () => {
+      if (categories.length === 0) return;
+      
+      try {
+        setLoadingCounts(true);
+        
+        // Get all store counts by category
+        const { data: storeCountData, error: storeCountError } = await supabase
+          .from('stores')
+          .select('category, count')
+          .order('category')
+          .group('category');
+        
+        if (storeCountError) throw storeCountError;
+        
+        // Get counts for featured stores by category
+        const { data: featuredStoreData, error: featuredStoreError } = await supabase
+          .from('stores')
+          .select('category, count')
+          .eq('featured', true)
+          .order('category')
+          .group('category');
+        
+        if (featuredStoreError) throw featuredStoreError;
+        
+        // Create mappings of category to store count
+        const storeCountsMap: Record<string, number> = {};
+        const featuredStoreCountsMap: Record<string, number> = {};
+        
+        // Populate store counts
+        storeCountData?.forEach(item => {
+          storeCountsMap[item.category] = item.count;
+        });
+        
+        // Populate featured store counts
+        featuredStoreData?.forEach(item => {
+          featuredStoreCountsMap[item.category] = item.count;
+        });
+        
+        setStoreCounts(storeCountsMap);
+        setFeaturedStoreCounts(featuredStoreCountsMap);
+      } catch (err) {
+        console.error('Error fetching store counts:', err);
+      } finally {
+        setLoadingCounts(false);
+      }
+    };
+    
+    fetchStoreCounts();
+  }, [categories]);
+  
+  // Get store count for a category
   const getCategoryStoreCount = (categorySlug: string) => {
-    // Placeholder until we implement actual count from database
-    return Math.floor(Math.random() * 20) + 1;
+    return storeCounts[categorySlug] || 0;
   };
   
-  // This would ideally come from the database in a future implementation
+  // Get featured store count for a category
   const getFeaturedStoreCount = (categorySlug: string) => {
-    // Placeholder until we implement actual count from database
-    return Math.floor(Math.random() * 5);
+    return featuredStoreCounts[categorySlug] || 0;
   };
   
   // Filter categories based on featured toggle
@@ -47,7 +102,7 @@ const AllCategories = () => {
             </Button>
           </div>
           
-          {loading ? (
+          {loading || loadingCounts ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
