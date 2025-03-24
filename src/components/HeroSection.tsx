@@ -51,7 +51,7 @@ const HeroSection = () => {
             />
             <button
               type="submit"
-              className="bg-deal text-white font-medium px-6 transition-colors duration-200 hover:bg-deal-hover focus:outline-none focus:ring-2 focus:ring-deal/50 focus:ring-offset-2 text-lg"
+              className="bg-deal text-white font-medium px-4 sm:px-6 transition-colors duration-200 hover:bg-deal-hover focus:outline-none focus:ring-2 focus:ring-deal/50 focus:ring-offset-2 text-base sm:text-lg whitespace-nowrap"
             >
               Search
             </button>
