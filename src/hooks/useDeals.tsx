@@ -20,10 +20,30 @@ export function useDeals(options?: {
       try {
         setLoading(true);
         
-        // Use explicit selection to avoid ambiguous column references
+        // Use explicit selection with table prefix to avoid ambiguous column references
         let query = supabase
           .from('deals')
-          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image, created_at, updated_at');
+          .select(`
+            deals.id, 
+            deals.title, 
+            deals.description, 
+            deals.code, 
+            deals.discount, 
+            deals.expiry_date, 
+            deals.store_id, 
+            deals.verified, 
+            deals.featured, 
+            deals.url, 
+            deals.image, 
+            deals.category, 
+            deals.used_count, 
+            deals.type, 
+            deals.price, 
+            deals.original_price, 
+            deals.product_image, 
+            deals.created_at, 
+            deals.updated_at
+          `);
         
         if (options?.featured) {
           query = query.eq('featured', true);
@@ -99,10 +119,30 @@ export function useDeal(id: string) {
       try {
         setLoading(true);
         
-        // Use explicit selection to avoid ambiguous column references
+        // Use explicit table prefix for selections to avoid ambiguity
         const { data, error } = await supabase
           .from('deals')
-          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image, created_at, updated_at')
+          .select(`
+            deals.id, 
+            deals.title, 
+            deals.description, 
+            deals.code, 
+            deals.discount, 
+            deals.expiry_date, 
+            deals.store_id, 
+            deals.verified, 
+            deals.featured, 
+            deals.url, 
+            deals.image, 
+            deals.category, 
+            deals.used_count, 
+            deals.type, 
+            deals.price, 
+            deals.original_price, 
+            deals.product_image, 
+            deals.created_at, 
+            deals.updated_at
+          `)
           .eq('id', id)
           .single();
         
