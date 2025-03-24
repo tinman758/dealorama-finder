@@ -23,11 +23,19 @@ const SocialLoginButtons = ({ action }: SocialLoginButtonsProps) => {
       const result = await signInWithSocial(provider);
       
       // Check if there was an error that indicates Supabase is not configured
-      if (result?.error?.message?.includes('Supabase not configured')) {
-        setShowSupabaseAlert(true);
-        toast.error('Supabase configuration missing', {
-          description: 'Please set up your Supabase environment variables'
-        });
+      if (result?.error) {
+        console.error(`${provider} login error:`, result.error);
+        
+        if (result.error.message?.includes('Supabase not configured')) {
+          setShowSupabaseAlert(true);
+          toast.error('Supabase configuration missing', {
+            description: 'Please set up your Supabase environment variables'
+          });
+        } else {
+          toast.error(`${provider} login failed`, {
+            description: result.error.message || 'Please try again or use email login'
+          });
+        }
       }
     } catch (error) {
       console.error(`${provider} login error:`, error);

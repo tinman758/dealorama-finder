@@ -28,9 +28,9 @@ const createSupabaseClient = () => {
           onAuthStateChange: () => ({ 
             data: { subscription: { unsubscribe: () => {} } } 
           }),
-          signUp: async () => ({ error: new Error('Supabase not configured') }),
-          signInWithPassword: async () => ({ error: new Error('Supabase not configured') }),
-          signInWithOAuth: async () => ({ error: new Error('Supabase not configured') }),
+          signUp: async () => ({ error: { message: 'Supabase not configured' } }),
+          signInWithPassword: async () => ({ error: { message: 'Supabase not configured' } }),
+          signInWithOAuth: async () => ({ error: { message: 'Supabase not configured' } }),
           signOut: async () => ({ error: null })
         }
       }
