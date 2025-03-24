@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 interface AdvertisementBannerProps {
   title: string;
@@ -17,39 +18,47 @@ const AdvertisementBanner = ({
   description,
   ctaText,
   ctaLink,
-  bgColor = "bg-deal",
+  bgColor = "bg-gradient-to-r from-deal to-blue-600",
   textColor = "text-white",
   imageUrl
 }: AdvertisementBannerProps) => {
   return (
-    <div className={`rounded-lg overflow-hidden shadow-soft ${bgColor} ${textColor}`}>
-      <div className="container-fluid">
-        <div className="py-8 px-6 flex flex-col md:flex-row items-center justify-between">
-          <div className="mb-6 md:mb-0 md:mr-6 text-center md:text-left">
-            <h3 className="text-2xl font-bold mb-3">{title}</h3>
-            <p className="text-lg opacity-90 mb-6 max-w-xl">{description}</p>
-            <Button
-              variant="outline"
-              className="border-2 border-current hover:bg-white/10 text-black"
-              asChild
-            >
-              <a href={ctaLink} target="_blank" rel="noopener noreferrer">
-                {ctaText}
-              </a>
-            </Button>
-          </div>
+    <div 
+      className={`relative overflow-hidden rounded-xl shadow-xl ${imageUrl ? 'h-[340px] md:h-[380px]' : 'h-[300px]'} w-full`} 
+      style={{ background: bgColor.startsWith('bg-') ? undefined : bgColor }}
+    >
+      {imageUrl && (
+        <div className="absolute inset-0 w-full h-full">
+          <img 
+            src={imageUrl} 
+            alt={title} 
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+        </div>
+      )}
+      
+      <div className="relative z-10 h-full flex flex-col justify-center p-8 md:p-12 max-w-2xl">
+        <div className={`${textColor}`}>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">{title}</h2>
+          <p className="text-lg md:text-xl opacity-90 mb-8 max-w-md">{description}</p>
           
-          {imageUrl && (
-            <div className="w-full md:w-1/3 flex-shrink-0">
-              <img 
-                src={imageUrl} 
-                alt={title} 
-                className="w-full h-auto max-h-48 object-cover rounded"
-              />
-            </div>
-          )}
+          <Button
+            className="group bg-white text-deal-dark hover:bg-white/90 font-medium rounded-full px-6 py-6 h-auto flex items-center gap-2 shadow-lg transform transition-all duration-300 hover:scale-105"
+            asChild
+          >
+            <a href={ctaLink} target="_blank" rel="noopener noreferrer">
+              {ctaText}
+              <ArrowRight className="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+          </Button>
         </div>
       </div>
+      
+      {/* Modern decorative element */}
+      <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full bg-white/10 backdrop-blur-sm" />
+      <div className="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-white/5 backdrop-blur-sm" />
     </div>
   );
 };
