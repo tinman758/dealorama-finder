@@ -19,7 +19,11 @@ export function useDeals(options?: {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        let query = supabase.from('deals').select('*');
+        
+        // Use explicit selection to avoid ambiguous column references
+        let query = supabase
+          .from('deals')
+          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image, created_at, updated_at');
         
         if (options?.featured) {
           query = query.eq('featured', true);
@@ -95,9 +99,10 @@ export function useDeal(id: string) {
       try {
         setLoading(true);
         
+        // Use explicit selection to avoid ambiguous column references
         const { data, error } = await supabase
           .from('deals')
-          .select('*')
+          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image, created_at, updated_at')
           .eq('id', id)
           .single();
         

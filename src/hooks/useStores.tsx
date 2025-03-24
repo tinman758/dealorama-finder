@@ -17,7 +17,11 @@ export function useStores(options?: {
     const fetchStores = async () => {
       try {
         setLoading(true);
-        let query = supabase.from('stores').select('*');
+        
+        // Use explicit selection to avoid ambiguous column references
+        let query = supabase
+          .from('stores')
+          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description, created_at, updated_at');
         
         if (options?.featured) {
           query = query.eq('featured', true);
@@ -78,9 +82,10 @@ export function useStore(id: string) {
       try {
         setLoading(true);
         
+        // Use explicit selection to avoid ambiguous column references
         const { data, error } = await supabase
           .from('stores')
-          .select('*')
+          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description, created_at, updated_at')
           .eq('id', id)
           .single();
         

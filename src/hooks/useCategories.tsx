@@ -13,9 +13,10 @@ export function useCategories() {
       try {
         setLoading(true);
         
+        // Use explicit selection to avoid ambiguous column references
         const { data, error } = await supabase
           .from('categories')
-          .select('*')
+          .select('id, name, slug, icon, created_at, updated_at')
           .order('name');
         
         if (error) throw error;
@@ -45,9 +46,10 @@ export function useCategory(slug: string) {
       try {
         setLoading(true);
         
+        // Use explicit selection to avoid ambiguous column references
         const { data, error } = await supabase
           .from('categories')
-          .select('*')
+          .select('id, name, slug, icon, created_at, updated_at')
           .eq('slug', slug)
           .single();
         
