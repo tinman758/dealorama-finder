@@ -38,25 +38,22 @@ const HeroSection = () => {
         </p>
         
         <form onSubmit={handleSubmit} className="mt-10 max-w-xl mx-auto">
-          <div className="relative flex rounded-full overflow-hidden shadow-md ring-1 ring-gray-200 bg-white focus-within:ring-2 focus-within:ring-deal/50">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
+          <div className="flex h-14 rounded-full overflow-hidden shadow-md ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-gray-300">
             <input
               type="text"
-              placeholder="Search deals..."
+              placeholder="Search stores, products, and coupons"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-grow py-3 px-12 focus:outline-none text-gray-700"
+              className="flex-grow pl-6 pr-4 py-3 focus:outline-none text-gray-700 bg-white"
               aria-label="Search deals"
             />
             <Button 
               type="submit" 
               size="icon" 
-              className="absolute right-0.5 top-0.5 bottom-0.5 rounded-full bg-deal hover:bg-deal-hover text-white transition-colors duration-200"
+              className="h-full aspect-square rounded-none bg-[#8B5CF6] hover:bg-[#7C3AED] text-white transition-colors duration-200"
               aria-label="Search"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-5 w-5" />
             </Button>
           </div>
           <p className="text-sm text-gray-500 mt-2">Find amazing deals from thousands of stores</p>
