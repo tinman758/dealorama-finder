@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getStoreById } from '@/data/stores';
 
 const DealsPage = () => {
   const [filteredDeals, setFilteredDeals] = useState(deals);
@@ -36,7 +37,8 @@ const DealsPage = () => {
       filtered = filtered.filter(deal => 
         deal.title.toLowerCase().includes(query) ||
         deal.description.toLowerCase().includes(query) ||
-        deal.store.toLowerCase().includes(query)
+        // Fix: Use storeId to get store name instead of direct 'store' property
+        getStoreById(deal.storeId)?.name.toLowerCase().includes(query)
       );
     }
     
