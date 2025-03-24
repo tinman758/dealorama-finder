@@ -44,7 +44,7 @@ const AdvertisementBanner = ({
               <img 
                 src={imageUrl} 
                 alt={title} 
-                className="w-full h-auto object-cover rounded"
+                className="w-full h-auto max-h-48 object-cover rounded"
               />
             </div>
           )}
