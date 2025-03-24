@@ -3,6 +3,70 @@ import { useState, useEffect } from 'react';
 import { Store } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
+// Sample stores data
+const sampleStores: Store[] = [
+  {
+    id: 'sample-store-1',
+    name: 'Amazon',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1200px-Amazon_logo.svg.png',
+    category: 'Electronics',
+    featured: true,
+    dealCount: 15,
+    url: 'https://amazon.com',
+    storeType: 'online',
+    country: 'Global',
+    description: 'Online retailer with a wide range of products.'
+  },
+  {
+    id: 'sample-store-2',
+    name: 'Nike',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png',
+    category: 'Fashion',
+    featured: true,
+    dealCount: 8,
+    url: 'https://nike.com',
+    storeType: 'both',
+    country: 'Global',
+    description: 'Athletic footwear and apparel.'
+  },
+  {
+    id: 'sample-store-3',
+    name: 'Starbucks',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1200px-Starbucks_Corporation_Logo_2011.svg.png',
+    category: 'Food & Dining',
+    featured: false,
+    dealCount: 5,
+    url: 'https://starbucks.com',
+    storeType: 'local',
+    country: 'Global',
+    description: 'Coffee chain with locations worldwide.'
+  },
+  {
+    id: 'sample-store-4',
+    name: 'Home Depot',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/TheHomeDepot.svg/1200px-TheHomeDepot.svg.png',
+    category: 'Home & Garden',
+    featured: false,
+    dealCount: 10,
+    url: 'https://homedepot.com',
+    storeType: 'both',
+    country: 'USA',
+    description: 'Home improvement and construction products retailer.'
+  },
+  {
+    id: 'sample-store-5',
+    name: 'Expedia',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Expedia_2012_logo.svg/1200px-Expedia_2012_logo.svg.png',
+    category: 'Travel',
+    featured: true,
+    dealCount: 12,
+    url: 'https://expedia.com',
+    storeType: 'online',
+    country: 'Global',
+    description: 'Online travel agency offering hotel reservations, airline tickets, and more.'
+  }
+];
+
 export function useStores(options?: { 
   featured?: boolean, 
   category?: string,
@@ -43,24 +107,51 @@ export function useStores(options?: {
         
         if (error) throw error;
 
-        // Map the database columns to our interface properties
-        const mappedStores = (data || []).map(store => ({
-          id: store.id,
-          name: store.name,
-          logo: store.logo,
-          category: store.category,
-          featured: store.featured || false,
-          dealCount: store.deal_count || 0,
-          url: store.url,
-          storeType: store.store_type as 'online' | 'local' | 'both' || 'online',
-          country: store.country || undefined,
-          description: store.description || undefined
-        }));
-        
-        setStores(mappedStores);
+        if (data && data.length > 0) {
+          // Map the database columns to our interface properties
+          const mappedStores = data.map(store => ({
+            id: store.id,
+            name: store.name,
+            logo: store.logo,
+            category: store.category,
+            featured: store.featured || false,
+            dealCount: store.deal_count || 0,
+            url: store.url,
+            storeType: store.store_type as 'online' | 'local' | 'both' || 'online',
+            country: store.country || undefined,
+            description: store.description || undefined
+          }));
+          
+          setStores(mappedStores);
+        } else {
+          // Use sample data if no data returned from the database
+          let filteredStores = [...sampleStores];
+          
+          if (options?.featured) {
+            filteredStores = filteredStores.filter(store => store.featured);
+          }
+          
+          if (options?.category) {
+            filteredStores = filteredStores.filter(store => store.category === options.category);
+          }
+          
+          if (options?.search) {
+            filteredStores = filteredStores.filter(store => 
+              store.name.toLowerCase().includes(options.search!.toLowerCase())
+            );
+          }
+          
+          if (options?.limit) {
+            filteredStores = filteredStores.slice(0, options.limit);
+          }
+          
+          setStores(filteredStores);
+        }
       } catch (err) {
         console.error('Error fetching stores:', err);
         setError('Failed to load stores');
+        // Fall back to sample data on error
+        setStores(sampleStores);
       } finally {
         setLoading(false);
       }
@@ -91,8 +182,8 @@ export function useStore(id: string) {
         
         if (error) throw error;
         
-        // Map the database columns to our interface properties
         if (data) {
+          // Map the database columns to our interface properties
           const mappedStore: Store = {
             id: data.id,
             name: data.name,
@@ -107,10 +198,17 @@ export function useStore(id: string) {
           };
           
           setStore(mappedStore);
+        } else {
+          // Find a sample store if no data returned
+          const sampleStore = sampleStores.find(s => s.id === id) || sampleStores[0];
+          setStore(sampleStore);
         }
       } catch (err) {
         console.error('Error fetching store:', err);
         setError('Failed to load store');
+        // Find a sample store as fallback
+        const sampleStore = sampleStores.find(s => s.id === id) || sampleStores[0];
+        setStore(sampleStore);
       } finally {
         setLoading(false);
       }
