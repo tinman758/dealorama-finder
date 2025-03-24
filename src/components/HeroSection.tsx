@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, Headphones, Car, Plane } from 'lucide-react';
+import { Button } from './ui/button';
 
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,8 +38,8 @@ const HeroSection = () => {
         </p>
         
         <form onSubmit={handleSubmit} className="mt-10 max-w-xl mx-auto">
-          <div className="relative flex shadow-md rounded-lg overflow-hidden ring-1 ring-gray-200 bg-white">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="relative flex rounded-full overflow-hidden shadow-md ring-1 ring-gray-200 bg-white focus-within:ring-2 focus-within:ring-deal/50">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
             <input
@@ -46,15 +47,17 @@ const HeroSection = () => {
               placeholder="Search deals..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-grow py-4 px-12 focus:outline-none text-gray-700 text-lg"
+              className="flex-grow py-3 px-12 focus:outline-none text-gray-700"
               aria-label="Search deals"
             />
-            <button
-              type="submit"
-              className="bg-deal text-white font-medium px-3 sm:px-6 py-2 transition-colors duration-200 hover:bg-deal-hover focus:outline-none focus:ring-2 focus:ring-deal/50 focus:ring-offset-2 text-sm sm:text-lg whitespace-nowrap"
+            <Button 
+              type="submit" 
+              size="icon" 
+              className="absolute right-0.5 top-0.5 bottom-0.5 rounded-full bg-deal hover:bg-deal-hover text-white transition-colors duration-200"
+              aria-label="Search"
             >
-              Search
-            </button>
+              <Search className="h-4 w-4" />
+            </Button>
           </div>
           <p className="text-sm text-gray-500 mt-2">Find amazing deals from thousands of stores</p>
         </form>
