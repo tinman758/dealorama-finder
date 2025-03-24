@@ -160,9 +160,9 @@ const DealCard: React.FC<DealCardProps> = ({
         flex flex-col h-full
       `}
     >
-      {/* Favorite button */}
+      {/* Favorite button - moved to z-20 to ensure it's above everything */}
       <button
-        className="favorite-btn absolute top-3 right-3 z-10 p-1.5 bg-white/70 hover:bg-white rounded-full shadow-sm transition-colors"
+        className="favorite-btn absolute top-3 right-3 z-20 p-1.5 bg-white/90 hover:bg-white rounded-full shadow-sm transition-colors"
         onClick={toggleFavorite}
         disabled={isLoading}
         aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
@@ -192,8 +192,9 @@ const DealCard: React.FC<DealCardProps> = ({
               />
               <span className="ml-2 text-sm font-medium text-gray-700">{store.name}</span>
               
+              {/* Verified badge - moved to the left side for better spacing */}
               {deal.verified && (
-                <span className="ml-auto flex items-center text-xs text-green-600 font-medium">
+                <span className="ml-2 flex items-center text-xs text-green-600 font-medium">
                   <Check className="h-3.5 w-3.5 mr-1" />
                   Verified
                 </span>
