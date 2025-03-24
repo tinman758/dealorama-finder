@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Linkedin, Youtube } from 'lucide-react';
+import PennyLogo from './PennyLogo';
 
 const categories = [
   { name: "Fashion", path: "/category/fashion" },
@@ -44,9 +45,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
           {/* Brand Column */}
           <div>
-            <Link to="/" className="font-bold text-2xl text-deal">
-              DealFinder
-            </Link>
+            <PennyLogo size="md" className="mb-4" />
             <p className="mt-4 text-sm text-gray-600">
               Find the best deals, discounts, and coupons from your favorite stores. 
               Save money on every purchase.
@@ -60,7 +59,7 @@ const Footer = () => {
                   href={social.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-deal transition-colors"
+                  className="text-gray-500 hover:text-penny-blue transition-colors"
                   aria-label={social.label}
                 >
                   <social.icon size={20} />
@@ -77,7 +76,7 @@ const Footer = () => {
                 <li key={category.path}>
                   <Link 
                     to={category.path}
-                    className="text-sm text-gray-600 hover:text-deal transition-colors duration-200"
+                    className="text-sm text-gray-600 hover:text-penny-blue transition-colors duration-200"
                   >
                     {category.name}
                   </Link>
@@ -86,7 +85,7 @@ const Footer = () => {
               <li>
                 <Link 
                   to="/all-categories"
-                  className="text-sm text-deal font-medium hover:underline transition-colors duration-200"
+                  className="text-sm text-penny-blue font-medium hover:underline transition-colors duration-200"
                 >
                   View all categories
                 </Link>
@@ -102,7 +101,7 @@ const Footer = () => {
                 <li key={store.path}>
                   <Link 
                     to={store.path}
-                    className="text-sm text-gray-600 hover:text-deal transition-colors duration-200"
+                    className="text-sm text-gray-600 hover:text-penny-blue transition-colors duration-200"
                   >
                     {store.name}
                   </Link>
@@ -111,7 +110,7 @@ const Footer = () => {
               <li>
                 <Link 
                   to="/all-stores"
-                  className="text-sm text-deal font-medium hover:underline transition-colors duration-200"
+                  className="text-sm text-penny-blue font-medium hover:underline transition-colors duration-200"
                 >
                   View all stores
                 </Link>
@@ -127,7 +126,7 @@ const Footer = () => {
                 <li key={link.path}>
                   <Link 
                     to={link.path}
-                    className="text-sm text-gray-600 hover:text-deal transition-colors duration-200"
+                    className="text-sm text-gray-600 hover:text-penny-blue transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -140,7 +139,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-gray-200/70 text-center">
           <p className="text-sm text-gray-500">
-            &copy; {currentYear} DealFinder. All rights reserved.
+            &copy; {currentYear} Penny Pinch. All rights reserved.
           </p>
         </div>
       </div>

@@ -64,10 +64,16 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				deal: {
-					DEFAULT: '#0EA5E9',
-					hover: '#0284c7',
-					light: '#e0f2fe',
-					dark: '#0369a1'
+					DEFAULT: '#1769E8', // Penny Pinch blue
+					hover: '#1252BC', // Darker blue for hover
+					light: '#E1EBFA', // Light blue background
+					dark: '#0E44AA'  // Darker blue for text
+				},
+				penny: {
+					blue: '#1769E8',
+					yellow: '#FFC93D',
+					light: '#FFFFFF',
+					dark: '#333333'
 				}
 			},
 			borderRadius: {

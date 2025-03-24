@@ -11,14 +11,14 @@ const AboutPage = () => {
       <main className="flex-grow">
         <div className="container-fluid py-12">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6">About DealFinder</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-6 text-penny-blue">About Penny Pinch</h1>
             <Separator className="mb-8" />
             
             <div className="space-y-8 text-gray-700">
               <section>
                 <h2 className="text-2xl font-semibold mb-4 text-gray-900">Our Mission</h2>
                 <p className="mb-4">
-                  At DealFinder, our mission is simple: to help you save money on every purchase. We believe that everyone 
+                  At Penny Pinch, our mission is simple: to help you save money on every purchase. We believe that everyone 
                   deserves access to the best deals and discounts, without having to spend hours searching for them.
                 </p>
                 <p>
@@ -30,7 +30,7 @@ const AboutPage = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4 text-gray-900">Our Story</h2>
                 <p className="mb-4">
-                  DealFinder was founded in 2023 by a group of shopping enthusiasts who were tired of missing out on great 
+                  Penny Pinch was founded in 2023 by a group of shopping enthusiasts who were tired of missing out on great 
                   deals. We started as a small team passionate about finding and sharing the best discounts, and we've 
                   grown into a platform used by thousands of smart shoppers every day.
                 </p>
@@ -43,7 +43,7 @@ const AboutPage = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4 text-gray-900">Our Team</h2>
                 <p className="mb-4">
-                  Behind DealFinder is a dedicated team of deal hunters, developers, and customer service professionals 
+                  Behind Penny Pinch is a dedicated team of deal hunters, developers, and customer service professionals 
                   who are committed to creating the best possible experience for our users.
                 </p>
                 <p>

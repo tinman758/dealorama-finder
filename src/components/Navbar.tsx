@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Search, Menu, X, User } from 'lucide-react';
 import SearchBar from './SearchBar';
 import { Button } from '@/components/ui/button';
+import PennyLogo from './PennyLogo';
 
 const categories = [
   { name: "Fashion", path: "/category/fashion" },
@@ -22,12 +23,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 w-full bg-blur-light border-b border-gray-200/50">
       <div className="container-fluid h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link 
-          to="/" 
-          className="font-bold text-2xl text-deal transition-all duration-300 transform hover:scale-[1.02]"
-        >
-          DealFinder
-        </Link>
+        <PennyLogo size="md" />
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
@@ -35,7 +31,7 @@ const Navbar = () => {
             <Link
               key={category.path}
               to={category.path}
-              className="text-sm font-medium text-gray-700 hover:text-deal transition-colors duration-200 focus-ring rounded-md px-2 py-1"
+              className="text-sm font-medium text-gray-700 hover:text-penny-blue transition-colors duration-200 focus-ring rounded-md px-2 py-1"
             >
               {category.name}
             </Link>
@@ -49,7 +45,7 @@ const Navbar = () => {
             <Button variant="ghost" size="sm" className="text-gray-700" asChild>
               <Link to="/login">Login</Link>
             </Button>
-            <Button className="bg-deal hover:bg-deal-hover text-white" size="sm" asChild>
+            <Button className="bg-penny-blue hover:bg-deal-hover text-white" size="sm" asChild>
               <Link to="/signup">Sign Up</Link>
             </Button>
           </div>
@@ -91,7 +87,7 @@ const Navbar = () => {
               <Link
                 key={category.path}
                 to={category.path}
-                className="text-base font-medium text-gray-700 hover:text-deal transition-colors duration-200 py-1"
+                className="text-base font-medium text-gray-700 hover:text-penny-blue transition-colors duration-200 py-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {category.name}
@@ -101,7 +97,7 @@ const Navbar = () => {
             <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200 mt-4">
               <Link 
                 to="/login"
-                className="text-base font-medium text-gray-700 hover:text-deal transition-colors duration-200 py-1 flex items-center gap-2"
+                className="text-base font-medium text-gray-700 hover:text-penny-blue transition-colors duration-200 py-1 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <User className="h-4 w-4" />
@@ -109,7 +105,7 @@ const Navbar = () => {
               </Link>
               <Link 
                 to="/signup"
-                className="text-base font-medium bg-deal text-white px-4 py-2 rounded-md hover:bg-deal-hover transition-colors duration-200 flex items-center justify-center"
+                className="text-base font-medium bg-penny-blue text-white px-4 py-2 rounded-md hover:bg-deal-hover transition-colors duration-200 flex items-center justify-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign Up

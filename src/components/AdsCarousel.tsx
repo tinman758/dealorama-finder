@@ -37,7 +37,7 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
         }}
         onSelect={(api) => {
           // Update active index when carousel changes
-          if (api && typeof api.selectedScrollSnap === 'function') {
+          if (api) {
             setActiveIndex(api.selectedScrollSnap());
           }
         }}
