@@ -9,26 +9,31 @@ import DealDetail from "./pages/DealDetail";
 import CategoryPage from "./pages/CategoryPage";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
+import * as React from "react";
 
-const queryClient = new QueryClient();
+// Move QueryClient creation inside the component
+const App = () => {
+  // Create a client inside the function component
+  const [queryClient] = React.useState(() => new QueryClient());
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/deal/:id" element={<DealDetail />} />
-          <Route path="/category/:category" element={<CategoryPage />} />
-          <Route path="/search" element={<SearchResults />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/deal/:id" element={<DealDetail />} />
+            <Route path="/category/:category" element={<CategoryPage />} />
+            <Route path="/search" element={<SearchResults />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
