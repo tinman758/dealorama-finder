@@ -5,6 +5,7 @@ import { Search, Menu, X, User } from 'lucide-react';
 import SearchBar from './SearchBar';
 import { Button } from '@/components/ui/button';
 import PennyLogo from './PennyLogo';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const categories = [
   { name: "Fashion", path: "/category/fashion" },
@@ -18,12 +19,13 @@ const categories = [
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-blur-light border-b border-gray-200/50">
       <div className="container-fluid h-16 flex items-center justify-between">
         {/* Logo */}
-        <PennyLogo size="md" />
+        <PennyLogo size={isMobile ? "sm" : "md"} />
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
@@ -42,7 +44,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="text-gray-700" asChild>
+            <Button className="bg-penny-blue hover:bg-deal-hover text-white" size="sm" asChild>
               <Link to="/login">Login</Link>
             </Button>
             <Button className="bg-penny-blue hover:bg-deal-hover text-white" size="sm" asChild>
@@ -97,10 +99,9 @@ const Navbar = () => {
             <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200 mt-4">
               <Link 
                 to="/login"
-                className="text-base font-medium text-gray-700 hover:text-penny-blue transition-colors duration-200 py-1 flex items-center gap-2"
+                className="text-base font-medium bg-penny-blue text-white px-4 py-2 rounded-md hover:bg-deal-hover transition-colors duration-200 flex items-center justify-center"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <User className="h-4 w-4" />
                 Login
               </Link>
               <Link 

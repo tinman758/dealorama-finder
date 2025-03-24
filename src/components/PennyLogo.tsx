@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface PennyLogoProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }
 
@@ -11,7 +11,8 @@ const PennyLogo: React.FC<PennyLogoProps> = ({ size = 'md', className = '' }) =>
   const sizeClasses = {
     sm: 'h-6',
     md: 'h-8',
-    lg: 'h-10'
+    lg: 'h-10',
+    xl: 'h-12'
   };
 
   return (

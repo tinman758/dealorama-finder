@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { searchDeals } from '../data/deals';
 import { Deal } from '../types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SearchBarProps {
   onClose?: () => void;
@@ -15,6 +16,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Focus the input when search is opened
@@ -57,9 +59,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-            className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-200 
+            className={`w-full pl-10 pr-10 py-3 ${isMobile ? 'my-2' : ''} rounded-lg border border-gray-200 
                        focus:outline-none focus:ring-2 focus:ring-deal/40 
-                       bg-white/80 backdrop-blur-sm transition-all duration-200"
+                       bg-white/80 backdrop-blur-sm transition-all duration-200`}
           />
           {query && (
             <button
@@ -77,9 +79,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
 
       {/* Search Results Dropdown */}
       {isFocused && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg 
+        <div className={`absolute top-full left-0 right-0 ${isMobile ? 'mt-3' : 'mt-2'} bg-white rounded-lg 
                         shadow-medium border border-gray-100 overflow-hidden z-10
-                        animate-scale-in origin-top">
+                        animate-scale-in origin-top`}>
           <ul className="max-h-80 overflow-y-auto">
             {results.map((deal) => (
               <li key={deal.id}>
