@@ -20,7 +20,7 @@ const AdminDashboard = () => {
         // Get user count
         const { count: userCount, error: userError } = await supabase
           .from('user_profiles')
-          .select('*', { count: 'exact', head: true });
+          .select('id', { count: 'exact', head: true });
           
         if (userError) {
           console.error('Error fetching user count:', userError);
@@ -29,7 +29,7 @@ const AdminDashboard = () => {
         // Get deals count
         const { count: dealCount, error: dealError } = await supabase
           .from('deals')
-          .select('*', { count: 'exact', head: true });
+          .select('id', { count: 'exact', head: true });
           
         if (dealError) {
           console.error('Error fetching deal count:', dealError);
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
         // Get stores count
         const { count: storeCount, error: storeError } = await supabase
           .from('stores')
-          .select('*', { count: 'exact', head: true });
+          .select('id', { count: 'exact', head: true });
           
         if (storeError) {
           console.error('Error fetching store count:', storeError);
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
         // Get categories count
         const { count: categoryCount, error: categoryError } = await supabase
           .from('categories')
-          .select('*', { count: 'exact', head: true });
+          .select('id', { count: 'exact', head: true });
           
         if (categoryError) {
           console.error('Error fetching category count:', categoryError);
