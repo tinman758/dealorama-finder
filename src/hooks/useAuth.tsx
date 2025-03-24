@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           description: 'Welcome back to DealFinder!',
           position: 'top-center',
           duration: 2000, // Reduced for faster fadeaway
-          className: 'bg-white text-deal-dark shadow-md', // Light background with dark blue text
+          className: 'bg-white text-deal-dark shadow-md dark:bg-gray-800 dark:text-gray-100', // Support for dark mode
           icon: '👋',
           style: {
             border: '1px solid rgba(23, 105, 232, 0.2)',
