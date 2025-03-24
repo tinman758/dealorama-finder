@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 const AdminLayout = () => {
   const { user, isLoading } = useAuth();
@@ -48,12 +47,11 @@ const AdminLayout = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700">
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b">
           <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
-              <ThemeToggle />
+              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
             </div>
           </div>
         </header>
@@ -79,7 +77,7 @@ const AdminLayout = () => {
             </TabsList>
           </Tabs>
           
-          <div className="mt-6 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <div className="mt-6 bg-white shadow rounded-lg p-6">
             <Outlet />
           </div>
         </div>

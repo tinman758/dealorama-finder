@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import DealDetail from "./pages/DealDetail";
 import DealsPage from "./pages/DealsPage";
@@ -49,57 +48,55 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       {/* Ensure TooltipProvider is properly instantiated */}
       <TooltipProvider>
-        <ThemeProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <Toaster />
-              <Sonner />
-              <ScrollToTop />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/deal/:id" element={<DealDetail />} />
-                <Route path="/deals" element={<DealsPage />} />
-                <Route path="/category/:category" element={<CategoryPage />} />
-                <Route path="/search" element={<SearchResults />} />
-                <Route path="/store/:id" element={<StorePage />} />
-                <Route path="/all-stores" element={<AllStores />} />
-                <Route path="/all-categories" element={<AllCategories />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/signup-success" element={<SignupSuccessPage />} />
-                
-                {/* Auth Callback Route */}
-                <Route path="/auth/callback" element={<AuthCallbackPage />} />
-                
-                {/* Account Routes */}
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/favorites" element={<FavoritesPage />} />
-                <Route path="/account/settings" element={<AccountSettingsPage />} />
-                <Route path="/account/security" element={<AccountSecurityPage />} />
-                
-                {/* Admin Dashboard Routes */}
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="users" element={<AdminUsers />} />
-                  <Route path="deals" element={<AdminDeals />} />
-                  <Route path="stores" element={<AdminStores />} />
-                  <Route path="categories" element={<AdminCategories />} />
-                  <Route path="admins" element={<AdminAdmins />} />
-                </Route>
-                
-                {/* New Routes */}
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/how-it-works" element={<HowItWorksPage />} />
-                <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                <Route path="/terms" element={<TermsOfServicePage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AuthProvider>
-          </BrowserRouter>
-        </ThemeProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/deal/:id" element={<DealDetail />} />
+              <Route path="/deals" element={<DealsPage />} />
+              <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/store/:id" element={<StorePage />} />
+              <Route path="/all-stores" element={<AllStores />} />
+              <Route path="/all-categories" element={<AllCategories />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/signup-success" element={<SignupSuccessPage />} />
+              
+              {/* Auth Callback Route */}
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              
+              {/* Account Routes */}
+              <Route path="/account" element={<AccountPage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/account/settings" element={<AccountSettingsPage />} />
+              <Route path="/account/security" element={<AccountSecurityPage />} />
+              
+              {/* Admin Dashboard Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="deals" element={<AdminDeals />} />
+                <Route path="stores" element={<AdminStores />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="admins" element={<AdminAdmins />} />
+              </Route>
+              
+              {/* New Routes */}
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/how-it-works" element={<HowItWorksPage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsOfServicePage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );

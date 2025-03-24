@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -100,36 +101,35 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-transparent dark:bg-transparent;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full dark:bg-muted-foreground/50;
+    @apply bg-muted-foreground/30 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50 dark:bg-muted-foreground/70;
+    @apply bg-muted-foreground/50;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft dark:bg-black/50 dark:border-white/10;
+    @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft;
   }
   
   .deal-badge {
-    @apply bg-penny-light text-penny-blue font-medium rounded-full px-2.5 py-0.5 text-xs inline-flex items-center dark:bg-penny-blue/20 dark:text-penny-light;
+    @apply bg-penny-light text-penny-blue font-medium rounded-full px-2.5 py-0.5 text-xs inline-flex items-center;
   }
 
   .deal-button {
     @apply bg-penny-blue hover:bg-deal-hover text-white font-medium rounded-md px-4 py-2 
            transition-all duration-300 transform hover:scale-[1.02] hover:shadow-glossy
-           focus:outline-none focus:ring-2 focus:ring-penny-blue/50 focus:ring-offset-2
-           dark:bg-penny-blue/90 dark:hover:bg-penny-blue;
+           focus:outline-none focus:ring-2 focus:ring-penny-blue/50 focus:ring-offset-2;
   }
   
   .soft-shadow {
-    @apply shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)];
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
   
   .animate-slide-in {
@@ -212,23 +212,4 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-/* Dark mode specific utilities */
-.dark .bg-blur-light {
-  @apply bg-black/70 backdrop-blur-[8px];
-}
-
-.dark .focus-ring {
-  @apply focus-visible:ring-deal/70;
-}
-
-/* Dark mode specific loading styles */
-.dark .loading-shimmer {
-  background: linear-gradient(90deg, 
-    rgba(0,0,0,0) 0%, 
-    rgba(255,255,255,0.1) 50%, 
-    rgba(0,0,0,0) 100%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
 }

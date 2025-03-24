@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CircleEllipsis, ShoppingBag, Store, Tag, Users } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 const AdminDashboard = () => {
   const [counts, setCounts] = useState({
@@ -72,60 +71,58 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold dark:text-white">Dashboard Overview</h2>
-      </div>
+      <h2 className="text-2xl font-bold mb-6">Dashboard Overview</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium dark:text-white">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-white">
+            <div className="text-2xl font-bold">
               {loading ? <CircleEllipsis className="h-6 w-6 animate-spin" /> : counts.users}
             </div>
-            <p className="text-xs text-muted-foreground dark:text-gray-400">Registered users</p>
+            <p className="text-xs text-muted-foreground">Registered users</p>
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium dark:text-white">Total Deals</CardTitle>
-            <Tag className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+            <CardTitle className="text-sm font-medium">Total Deals</CardTitle>
+            <Tag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-white">
+            <div className="text-2xl font-bold">
               {loading ? <CircleEllipsis className="h-6 w-6 animate-spin" /> : counts.deals}
             </div>
-            <p className="text-xs text-muted-foreground dark:text-gray-400">Active deals</p>
+            <p className="text-xs text-muted-foreground">Active deals</p>
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium dark:text-white">Stores</CardTitle>
-            <Store className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+            <CardTitle className="text-sm font-medium">Stores</CardTitle>
+            <Store className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-white">
+            <div className="text-2xl font-bold">
               {loading ? <CircleEllipsis className="h-6 w-6 animate-spin" /> : counts.stores}
             </div>
-            <p className="text-xs text-muted-foreground dark:text-gray-400">Featured stores</p>
+            <p className="text-xs text-muted-foreground">Featured stores</p>
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium dark:text-white">Categories</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+            <CardTitle className="text-sm font-medium">Categories</CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold dark:text-white">
+            <div className="text-2xl font-bold">
               {loading ? <CircleEllipsis className="h-6 w-6 animate-spin" /> : counts.categories}
             </div>
-            <p className="text-xs text-muted-foreground dark:text-gray-400">Deal categories</p>
+            <p className="text-xs text-muted-foreground">Deal categories</p>
           </CardContent>
         </Card>
       </div>
