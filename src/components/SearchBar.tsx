@@ -47,7 +47,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className={`relative w-full ${isMobile ? 'px-3' : ''}`}>
       <form onSubmit={handleSubmit} className="relative">
         <div className="relative flex items-center">
           <Search className="absolute left-3 h-5 w-5 text-gray-400" />
