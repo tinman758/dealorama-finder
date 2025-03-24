@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Eye, EyeOff, ArrowUpDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, EyeOff, ArrowUpDown, Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -20,9 +20,11 @@ interface Advertisement {
   image_url?: string;
   is_active: boolean;
   display_order: number;
+  created_at: string;
+  updated_at: string;
 }
 
-const initialFormState: Omit<Advertisement, 'id'> = {
+const initialFormState: Omit<Advertisement, 'id' | 'created_at' | 'updated_at'> = {
   title: '',
   description: '',
   cta_text: 'Shop Now',
@@ -36,9 +38,10 @@ const initialFormState: Omit<Advertisement, 'id'> = {
 const AdminAdvertisements = () => {
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState<Omit<Advertisement, 'id'>>(initialFormState);
+  const [formData, setFormData] = useState<Omit<Advertisement, 'id' | 'created_at' | 'updated_at'>>(initialFormState);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchAdvertisements();
@@ -57,9 +60,9 @@ const AdminAdvertisements = () => {
       }
 
       setAdvertisements(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching advertisements:', error);
-      toast.error('Failed to load advertisements');
+      toast.error(error.message || 'Failed to load advertisements');
     } finally {
       setLoading(false);
     }
@@ -82,7 +85,13 @@ const AdminAdvertisements = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    
+    if (!formData.title || !formData.description || !formData.cta_text || !formData.cta_link) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
+    setIsSubmitting(true);
 
     try {
       if (editingId) {
@@ -113,11 +122,11 @@ const AdminAdvertisements = () => {
 
       resetForm();
       fetchAdvertisements();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving advertisement:', error);
-      toast.error('Failed to save advertisement');
+      toast.error(error.message || 'Failed to save advertisement');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -148,9 +157,9 @@ const AdminAdvertisements = () => {
         if (error) throw error;
         toast.success('Advertisement deleted successfully');
         fetchAdvertisements();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error deleting advertisement:', error);
-        toast.error('Failed to delete advertisement');
+        toast.error(error.message || 'Failed to delete advertisement');
       } finally {
         setLoading(false);
       }
@@ -168,9 +177,9 @@ const AdminAdvertisements = () => {
       if (error) throw error;
       toast.success(`Advertisement ${ad.is_active ? 'deactivated' : 'activated'} successfully`);
       fetchAdvertisements();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error toggling advertisement status:', error);
-      toast.error('Failed to update advertisement status');
+      toast.error(error.message || 'Failed to update advertisement status');
     } finally {
       setLoading(false);
     }
@@ -209,9 +218,9 @@ const AdminAdvertisements = () => {
       
       toast.success('Advertisement order updated');
       fetchAdvertisements();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error changing advertisement order:', error);
-      toast.error('Failed to update advertisement order');
+      toast.error(error.message || 'Failed to update advertisement order');
     } finally {
       setLoading(false);
     }
@@ -235,7 +244,7 @@ const AdminAdvertisements = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
                   id="title"
                   name="title"
@@ -247,7 +256,7 @@ const AdminAdvertisements = () => {
               </div>
               
               <div>
-                <Label htmlFor="cta_text">Call to Action Text</Label>
+                <Label htmlFor="cta_text">Call to Action Text *</Label>
                 <Input
                   id="cta_text"
                   name="cta_text"
@@ -259,7 +268,7 @@ const AdminAdvertisements = () => {
               </div>
               
               <div className="md:col-span-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description *</Label>
                 <Textarea
                   id="description"
                   name="description"
@@ -272,7 +281,7 @@ const AdminAdvertisements = () => {
               </div>
               
               <div className="md:col-span-2">
-                <Label htmlFor="cta_link">Call to Action Link</Label>
+                <Label htmlFor="cta_link">Call to Action Link *</Label>
                 <Input
                   id="cta_link"
                   name="cta_link"
@@ -315,7 +324,10 @@ const AdminAdvertisements = () => {
                   name="display_order"
                   type="number"
                   value={formData.display_order}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    setFormData(prev => ({ ...prev, display_order: value }));
+                  }}
                   min={0}
                 />
               </div>
@@ -334,7 +346,8 @@ const AdminAdvertisements = () => {
               <Button type="button" variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {editingId ? 'Update' : 'Create'} Advertisement
               </Button>
             </div>
@@ -357,7 +370,9 @@ const AdminAdvertisements = () => {
             {loading && !advertisements.length ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-10 text-gray-500">
-                  Loading advertisements...
+                  <div className="flex justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
                 </TableCell>
               </TableRow>
             ) : advertisements.length === 0 ? (
