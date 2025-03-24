@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check, Copy, ExternalLink, Heart, Tag } from 'lucide-react';
 import { Deal } from '../types';
-import { getStoreById } from '../data/stores';
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '@/hooks/useAuth';
+import { useStore } from '@/hooks/useStores';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DealCardProps {
   deal: Deal;
@@ -21,7 +22,7 @@ const DealCard: React.FC<DealCardProps> = ({
   onFavoriteToggle,
   initiallyFavorited = false
 }) => {
-  const store = getStoreById(deal.storeId);
+  const { store, loading: storeLoading } = useStore(deal.storeId);
   const [copied, setCopied] = useState(false);
   const [isFavorited, setIsFavorited] = useState(initiallyFavorited);
   const [isLoading, setIsLoading] = useState(false);
@@ -160,7 +161,7 @@ const DealCard: React.FC<DealCardProps> = ({
         flex flex-col h-full
       `}
     >
-      {/* Favorite button - moved to z-20 to ensure it's above everything */}
+      {/* Favorite button */}
       <button
         className="favorite-btn absolute top-3 right-3 z-20 p-1.5 bg-white/90 hover:bg-white rounded-full shadow-sm transition-colors"
         onClick={toggleFavorite}
@@ -183,7 +184,12 @@ const DealCard: React.FC<DealCardProps> = ({
       >
         <div className="p-4 flex-grow flex flex-col">
           {/* Store Logo */}
-          {store && (
+          {storeLoading ? (
+            <div className="flex items-center mb-3">
+              <Skeleton className="h-7 w-7 rounded-full" />
+              <Skeleton className="ml-2 h-4 w-24" />
+            </div>
+          ) : store ? (
             <div className="flex items-center mb-3">
               <img 
                 src={store.logo} 
@@ -200,7 +206,7 @@ const DealCard: React.FC<DealCardProps> = ({
                 </span>
               )}
             </div>
-          )}
+          ) : null}
           
           {/* Deal Content */}
           <div className="mb-3 flex-grow">
@@ -231,11 +237,11 @@ const DealCard: React.FC<DealCardProps> = ({
           </div>
           
           {/* Used Count */}
-          {deal.usedCount && (
+          {deal.usedCount ? (
             <div className="text-xs text-gray-500 mb-2">
               Used {deal.usedCount.toLocaleString()} times
             </div>
-          )}
+          ) : null}
         </div>
         
         {/* Hover effect overlay */}

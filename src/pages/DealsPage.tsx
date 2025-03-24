@@ -1,10 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
-import { deals } from '@/data/deals';
 import { Button } from '@/components/ui/button';
 import { Filter, Search, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -15,61 +14,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getStoreById } from '@/data/stores';
+import { useDeals } from '@/hooks/useDeals';
+import { useCategories } from '@/hooks/useCategories';
+import { Loader2 } from 'lucide-react';
 
 const DealsPage = () => {
-  const [filteredDeals, setFilteredDeals] = useState(deals);
   const [showFeatured, setShowFeatured] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dealTypeFilter, setDealTypeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   
-  // Get unique categories from deals data
-  const uniqueCategories = Array.from(new Set(deals.map(deal => deal.category)));
-  
-  // Handle filters
-  const applyFilters = () => {
-    let filtered = [...deals];
-    
-    // Apply search filter
-    if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(deal => 
-        deal.title.toLowerCase().includes(query) ||
-        deal.description.toLowerCase().includes(query) ||
-        // Fix: Use storeId to get store name instead of direct 'store' property
-        getStoreById(deal.storeId)?.name.toLowerCase().includes(query)
-      );
-    }
-    
-    // Apply featured filter
-    if (showFeatured) {
-      filtered = filtered.filter(deal => deal.featured);
-    }
-    
-    // Apply category filter
-    if (categoryFilter !== "all") {
-      filtered = filtered.filter(deal => deal.category === categoryFilter);
-    }
-    
-    // Apply deal type filter
-    if (dealTypeFilter !== "all") {
-      filtered = filtered.filter(deal => deal.type === dealTypeFilter);
-    }
-    
-    setFilteredDeals(filtered);
-  };
+  const { categories } = useCategories();
+  const { deals, loading } = useDeals({
+    featured: showFeatured || undefined,
+    category: categoryFilter !== "all" ? categoryFilter : undefined,
+    type: dealTypeFilter !== "all" ? dealTypeFilter as any : undefined,
+    search: searchQuery || undefined
+  });
   
   // Handle search submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    applyFilters();
+    setSearchQuery(searchValue);
   };
-  
-  // Apply filters whenever any filter changes
-  React.useEffect(() => {
-    applyFilters();
-  }, [showFeatured, categoryFilter, dealTypeFilter, searchQuery]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -86,8 +54,8 @@ const DealsPage = () => {
                 <Input 
                   type="text" 
                   placeholder="Search deals..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
                   className="pl-10 pr-4"
                 />
               </div>
@@ -101,9 +69,9 @@ const DealsPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {uniqueCategories.map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                  {categories.map(category => (
+                    <SelectItem key={category.id} value={category.slug}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -137,10 +105,14 @@ const DealsPage = () => {
           
           {/* Display filtered deals count */}
           <p className="text-gray-600 mb-6">
-            Showing {filteredDeals.length} {filteredDeals.length === 1 ? 'deal' : 'deals'}
+            Showing {deals.length} {deals.length === 1 ? 'deal' : 'deals'}
           </p>
           
-          {filteredDeals.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          ) : deals.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">No deals match your current filters.</p>
               <Button 
@@ -151,6 +123,7 @@ const DealsPage = () => {
                   setCategoryFilter("all");
                   setDealTypeFilter("all");
                   setSearchQuery("");
+                  setSearchValue("");
                 }}
               >
                 Clear All Filters
@@ -158,7 +131,7 @@ const DealsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredDeals.map(deal => (
+              {deals.map(deal => (
                 <DealCard key={deal.id} deal={deal} />
               ))}
             </div>

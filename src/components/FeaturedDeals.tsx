@@ -1,59 +1,86 @@
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DealCard from './DealCard';
-import { getFeaturedDeals } from '../data/deals';
+import { Link } from 'react-router-dom';
+import { useDeals } from '@/hooks/useDeals';
+import { Loader2 } from 'lucide-react';
 
 const FeaturedDeals = () => {
-  const [visibleDeals, setVisibleDeals] = useState(4);
-  const featuredDeals = getFeaturedDeals();
+  const { deals: allFeaturedDeals, loading } = useDeals({ featured: true, limit: 12 });
+
+  // Filter deals by type
+  const codeDeals = React.useMemo(() => {
+    return allFeaturedDeals.filter(deal => deal.type === 'code');
+  }, [allFeaturedDeals]);
   
-  // Ensure at least one product deal is shown in the featured section
-  const hasProductDeal = featuredDeals.slice(0, visibleDeals).some(deal => deal.type === 'product');
+  const linkDeals = React.useMemo(() => {
+    return allFeaturedDeals.filter(deal => deal.type === 'link');
+  }, [allFeaturedDeals]);
   
-  // If no product deal in visible deals, replace the last visible deal with a product deal
-  let displayDeals = [...featuredDeals.slice(0, visibleDeals)];
-  
-  if (!hasProductDeal) {
-    const productDeal = featuredDeals.find(deal => deal.type === 'product');
-    if (productDeal) {
-      displayDeals[displayDeals.length - 1] = productDeal;
-    }
-  }
-  
+  const productDeals = React.useMemo(() => {
+    return allFeaturedDeals.filter(deal => deal.type === 'product');
+  }, [allFeaturedDeals]);
+
   return (
-    <section className="py-12 sm:py-16">
-      <div className="container-fluid">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Featured Deals</h2>
-          <Link 
-            to="/deals" 
-            className="flex items-center text-deal font-medium hover:underline"
-          >
-            View all deals
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Link>
-        </div>
+    <section className="py-12">
+      <div className="container">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">Featured Deals</h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayDeals.map(deal => (
-            <div key={deal.id} className="animate-slide-in" style={{ animationDelay: `${parseInt(deal.id) * 100}ms` }}>
-              <DealCard deal={deal} featured={true} />
-            </div>
-          ))}
-        </div>
-        
-        {visibleDeals < featuredDeals.length && (
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => setVisibleDeals(prevCount => Math.min(prevCount + 4, featuredDeals.length))}
-              className="deal-button mx-auto"
-            >
-              Show More Deals
-            </button>
+        <Tabs defaultValue="all" className="w-full">
+          <div className="flex justify-between items-center mb-6">
+            <TabsList>
+              <TabsTrigger value="all">All Deals</TabsTrigger>
+              <TabsTrigger value="codes">Coupon Codes</TabsTrigger>
+              <TabsTrigger value="links">Deal Links</TabsTrigger>
+              <TabsTrigger value="products">Products</TabsTrigger>
+            </TabsList>
+            
+            <Link to="/deals" className="text-sm font-medium text-deal hover:underline">
+              View All Deals &rarr;
+            </Link>
           </div>
-        )}
+          
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <>
+              <TabsContent value="all" className="mt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {allFeaturedDeals.slice(0, 8).map(deal => (
+                    <DealCard key={deal.id} deal={deal} featured={true} />
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="codes" className="mt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {codeDeals.slice(0, 8).map(deal => (
+                    <DealCard key={deal.id} deal={deal} featured={true} />
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="links" className="mt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {linkDeals.slice(0, 8).map(deal => (
+                    <DealCard key={deal.id} deal={deal} featured={true} />
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="products" className="mt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {productDeals.slice(0, 8).map(deal => (
+                    <DealCard key={deal.id} deal={deal} featured={true} />
+                  ))}
+                </div>
+              </TabsContent>
+            </>
+          )}
+        </Tabs>
       </div>
     </section>
   );

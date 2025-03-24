@@ -1,85 +1,68 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Copy, Check, ExternalLink, Clock, ArrowLeft, Heart } from 'lucide-react';
-import { toast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Check, Copy, ExternalLink, Heart, Tag, Clock, ArrowLeftCircle, ShoppingBag } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { useDeal } from '@/hooks/useDeals';
+import { useStore } from '@/hooks/useStores';
+import { useDeals } from '@/hooks/useDeals';
 import DealCard from '@/components/DealCard';
-import { getDealById, getDealsForStore } from '@/data/deals';
-import { getStoreById } from '@/data/stores';
-import { Deal } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const DealDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [deal, setDeal] = useState<Deal | null>(null);
-  const [relatedDeals, setRelatedDeals] = useState<Deal[]>([]);
+  const { deal, loading: dealLoading, error } = useDeal(id || '');
+  const { store, loading: storeLoading } = useStore(deal?.storeId || '');
+  const { deals: relatedDeals, loading: relatedLoading } = useDeals({ 
+    storeId: deal?.storeId,
+    limit: 4
+  });
   const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [favLoading, setFavLoading] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
   const { user } = useAuth();
   
   useEffect(() => {
-    if (id) {
-      const dealData = getDealById(id);
-      if (dealData) {
-        setDeal(dealData);
-        
-        // Get related deals from same store
-        const storeDeals = getDealsForStore(dealData.storeId)
-          .filter(d => d.id !== id)
-          .slice(0, 3);
-          
-        setRelatedDeals(storeDeals);
-      }
-      
-      // Simulate loading
-      setTimeout(() => {
-        setLoading(false);
-      }, 300);
-    }
-  }, [id]);
-  
-  // Check if the deal is favorited
-  useEffect(() => {
     const checkFavoriteStatus = async () => {
-      if (!user || !id) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('favorites')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('deal_id', id)
-          .single();
-          
-        if (!error && data) {
-          setIsFavorited(true);
+      if (user && deal) {
+        try {
+          const { data, error } = await supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('deal_id', deal.id)
+            .single();
+            
+          if (!error && data) {
+            setIsFavorited(true);
+          }
+        } catch (error) {
+          console.error('Error checking favorite status:', error);
         }
-      } catch (error) {
-        console.error('Error checking favorite status:', error);
       }
     };
     
     checkFavoriteStatus();
-  }, [user, id]);
+  }, [user, deal]);
   
-  const store = deal ? getStoreById(deal.storeId) : null;
-
-  const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast({
-      title: "Success",
-      description: "Code copied to clipboard!"
-    });
-    
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+  const copyCode = () => {
+    if (deal?.code) {
+      navigator.clipboard.writeText(deal.code);
+      setCopied(true);
+      toast({
+        title: "Success",
+        description: "Code copied to clipboard!",
+      });
+      
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    }
   };
   
   const toggleFavorite = async () => {
@@ -92,9 +75,9 @@ const DealDetail = () => {
       return;
     }
     
-    if (!id) return;
+    if (!deal) return;
     
-    setFavLoading(true);
+    setIsToggling(true);
     
     try {
       if (isFavorited) {
@@ -103,7 +86,7 @@ const DealDetail = () => {
           .from('favorites')
           .delete()
           .eq('user_id', user.id)
-          .eq('deal_id', id);
+          .eq('deal_id', deal.id);
           
         if (error) throw error;
         
@@ -116,7 +99,7 @@ const DealDetail = () => {
         // Add to favorites
         const { error } = await supabase
           .from('favorites')
-          .insert({ user_id: user.id, deal_id: id });
+          .insert({ user_id: user.id, deal_id: deal.id });
           
         if (error) throw error;
         
@@ -134,51 +117,11 @@ const DealDetail = () => {
         variant: "destructive"
       });
     } finally {
-      setFavLoading(false);
+      setIsToggling(false);
     }
   };
   
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow py-12 container-fluid animate-pulse">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-200 h-10 w-40 mb-6 rounded"></div>
-            <div className="bg-gray-200 h-8 w-3/4 mb-4 rounded"></div>
-            <div className="bg-gray-200 h-8 w-1/2 mb-8 rounded"></div>
-            <div className="bg-white shadow-soft rounded-lg p-8 mb-8">
-              <div className="bg-gray-200 h-12 w-full mb-6 rounded"></div>
-              <div className="bg-gray-200 h-24 w-full mb-8 rounded"></div>
-              <div className="bg-gray-200 h-12 w-full rounded"></div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-  
-  if (!deal) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow py-12 container-fluid">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl font-bold mb-4">Deal Not Found</h1>
-            <p className="text-gray-600 mb-8">The deal you're looking for doesn't exist or has expired.</p>
-            <Link to="/" className="deal-button inline-flex items-center">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-  
-  const formattedDate = deal.expiryDate 
+  const expiryDate = deal?.expiryDate 
     ? new Date(deal.expiryDate).toLocaleDateString('en-US', { 
         year: 'numeric',
         month: 'long', 
@@ -186,177 +129,195 @@ const DealDetail = () => {
       }) 
     : null;
   
-  return (
-    <div className="min-h-screen flex flex-col page-transition">
-      <Navbar />
-      <main className="flex-grow py-12 sm:py-16 container-fluid">
-        <div className="max-w-4xl mx-auto">
-          {/* Breadcrumb */}
-          <nav className="mb-6">
-            <ol className="flex items-center space-x-2 text-sm text-gray-600">
-              <li>
-                <Link to="/" className="hover:text-deal">Home</Link>
-              </li>
-              <li>
-                <span className="mx-2">/</span>
-              </li>
-              {store && (
-                <>
-                  <li>
-                    <Link to={`/store/${store.id}`} className="hover:text-deal">{store.name}</Link>
-                  </li>
-                  <li>
-                    <span className="mx-2">/</span>
-                  </li>
-                </>
-              )}
-              <li className="font-medium text-gray-900 truncate max-w-[200px] sm:max-w-xs">
-                {deal.title}
-              </li>
-            </ol>
-          </nav>
-          
-          {/* Deal Title */}
-          <div className="mb-8 animate-slide-up">
-            <div className="flex items-start justify-between">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{deal.title}</h1>
-              
-              {user && (
-                <button
-                  className="flex-shrink-0 ml-4 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors"
-                  onClick={toggleFavorite}
-                  disabled={favLoading}
-                >
-                  <Heart 
-                    className={`h-6 w-6 ${
-                      isFavorited 
-                        ? 'text-red-500 fill-red-500' 
-                        : 'text-gray-400 hover:text-gray-600'
-                    } ${favLoading ? 'opacity-50' : ''}`} 
-                  />
-                </button>
-              )}
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-3">
-              {deal.verified && (
-                <span className="inline-flex items-center text-sm text-green-600 font-medium">
-                  <Check className="h-4 w-4 mr-1" />
-                  Verified Deal
-                </span>
-              )}
-              
-              {formattedDate && (
-                <span className="inline-flex items-center text-sm text-gray-600">
-                  <Clock className="h-4 w-4 mr-1" />
-                  Expires {formattedDate}
-                </span>
-              )}
-              
-              {deal.usedCount && (
-                <span className="text-sm text-gray-600">
-                  Used {deal.usedCount.toLocaleString()} times
-                </span>
-              )}
+  const isProductDeal = deal?.type === 'product';
+  
+  if (dealLoading || storeLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="p-8">
+              <Skeleton className="h-8 w-3/4 mb-4" />
+              <Skeleton className="h-6 w-1/2 mb-6" />
+              <Skeleton className="h-24 w-full mb-6" />
+              <Skeleton className="h-10 w-36" />
             </div>
           </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (error || !deal) {
+    return (
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-16 min-h-[60vh] flex flex-col items-center justify-center">
+          <h2 className="text-2xl font-bold mb-4">Deal Not Found</h2>
+          <p className="text-gray-600 mb-8">The deal you're looking for doesn't exist or has been removed.</p>
+          <Button asChild>
+            <Link to="/deals">
+              <ShoppingBag className="mr-2 h-5 w-5" />
+              Browse All Deals
+            </Link>
+          </Button>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Breadcrumb */}
+          <div className="mb-6">
+            <Link to="/deals" className="inline-flex items-center text-sm text-gray-600 hover:text-deal">
+              <ArrowLeftCircle className="mr-1 h-4 w-4" />
+              Back to all deals
+            </Link>
+          </div>
           
-          {/* Deal Card */}
-          <div className="bg-white shadow-medium rounded-lg overflow-hidden mb-10 animate-scale-in">
-            {/* Store Header */}
-            {store && (
-              <div className="p-6 flex items-center border-b border-gray-100">
-                <div className="flex items-center">
+          {/* Main Deal Card */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+            <div className="p-6 md:p-8">
+              {/* Store information */}
+              {store && (
+                <div className="flex items-center mb-6">
                   <img 
                     src={store.logo} 
                     alt={store.name} 
-                    className="h-10 w-10 rounded-full bg-white p-1 border border-gray-100 object-contain" 
+                    className="h-10 w-10 rounded-full object-contain bg-white p-1 border border-gray-100" 
                   />
                   <div className="ml-3">
-                    <h3 className="font-medium text-gray-900">{store.name}</h3>
                     <Link 
                       to={`/store/${store.id}`}
-                      className="text-sm text-deal hover:underline"
+                      className="font-medium text-gray-900 hover:text-deal"
                     >
-                      View all {store.dealCount} deals
+                      {store.name}
                     </Link>
+                    <div className="text-sm text-gray-500">{store.category}</div>
                   </div>
-                </div>
-                <span className="ml-auto deal-badge text-base font-medium px-3 py-1">{deal.discount}</span>
-              </div>
-            )}
-            
-            {/* Deal Content */}
-            <div className="p-6">
-              <p className="text-gray-700 mb-6">
-                {deal.description}
-              </p>
-              
-              {/* Deal Action */}
-              {deal.code ? (
-                <div className="mb-6">
-                  <p className="text-sm text-gray-600 mb-2">Copy this code and use it at checkout:</p>
-                  <div className="flex rounded-md overflow-hidden border border-gray-200">
-                    <div className="bg-gray-50 flex-grow p-3 font-mono text-gray-900 text-center">
-                      {deal.code}
-                    </div>
-                    <button
-                      onClick={() => copyCode(deal.code!)}
-                      className="bg-deal hover:bg-deal-hover text-white font-medium px-4 flex items-center transition-colors focus:outline-none"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="h-5 w-5 mr-2" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-5 w-5 mr-2" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mb-6">
-                  <p className="text-sm text-gray-600 mb-2">Click the button below to get this deal:</p>
+                  
+                  {deal.verified && (
+                    <span className="ml-auto flex items-center text-green-600 text-sm">
+                      <Check className="h-4 w-4 mr-1" />
+                      Verified
+                    </span>
+                  )}
                 </div>
               )}
               
-              <a 
-                href={deal.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="deal-button w-full flex items-center justify-center"
-              >
-                <span>{deal.code ? "Go to Store" : "Get Deal"}</span>
-                <ExternalLink className="h-4 w-4 ml-2" />
-              </a>
+              {/* Deal Badge */}
+              <div className="inline-block bg-deal/10 text-deal font-medium px-3 py-1 rounded-full text-sm mb-4">
+                {deal.discount}
+              </div>
               
-              <p className="mt-4 text-sm text-gray-500 text-center">
-                {deal.code 
-                  ? "Don't forget to apply the code at checkout to get your discount."
-                  : "This special deal will be automatically applied at checkout."}
-              </p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{deal.title}</h1>
+              
+              <div className="prose max-w-none text-gray-600 mb-6">
+                <p>{deal.description}</p>
+              </div>
+              
+              {/* Product Price (for product deals) */}
+              {isProductDeal && deal.price && (
+                <div className="mb-6 flex items-baseline">
+                  <span className="text-3xl font-bold text-deal">{deal.price}</span>
+                  {deal.originalPrice && (
+                    <span className="ml-3 text-xl text-gray-500 line-through">{deal.originalPrice}</span>
+                  )}
+                </div>
+              )}
+              
+              {/* Expiry Information */}
+              {expiryDate && (
+                <div className="flex items-center text-sm text-gray-600 mb-6">
+                  <Clock className="h-4 w-4 mr-2" />
+                  <span>Expires on {expiryDate}</span>
+                </div>
+              )}
+              
+              {/* Deal Action Buttons */}
+              <div className="flex flex-wrap gap-4">
+                {deal.code ? (
+                  <Button 
+                    size="lg"
+                    className="flex-1"
+                    onClick={copyCode}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="mr-2 h-5 w-5" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-5 w-5" />
+                        {deal.code}
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button 
+                    size="lg"
+                    className="flex-1"
+                    asChild
+                  >
+                    <a 
+                      href={deal.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      {isProductDeal ? (
+                        <>
+                          <Tag className="mr-2 h-5 w-5" />
+                          Buy Now
+                        </>
+                      ) : (
+                        <>
+                          <ExternalLink className="mr-2 h-5 w-5" />
+                          Get Deal
+                        </>
+                      )}
+                    </a>
+                  </Button>
+                )}
+                
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={`h-12 w-12 ${isFavorited ? 'bg-red-50 border-red-200' : ''}`}
+                  onClick={toggleFavorite}
+                  disabled={isToggling}
+                >
+                  <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
+                </Button>
+              </div>
             </div>
           </div>
           
-          {/* Related Deals */}
-          {relatedDeals.length > 0 && (
-            <div className="my-12 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Deals</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedDeals.map(relatedDeal => (
-                  <DealCard key={relatedDeal.id} deal={relatedDeal} />
-                ))}
+          {/* More Deals from Store */}
+          {store && relatedDeals.length > 1 && (
+            <div className="mt-12">
+              <h2 className="text-xl font-bold mb-6">More Deals from {store.name}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {relatedDeals
+                  .filter(relatedDeal => relatedDeal.id !== deal.id)
+                  .slice(0, 3)
+                  .map(relatedDeal => (
+                    <DealCard key={relatedDeal.id} deal={relatedDeal} />
+                  ))}
               </div>
             </div>
           )}
         </div>
-      </main>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 };
 
