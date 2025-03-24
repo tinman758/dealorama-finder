@@ -50,7 +50,7 @@ const HeroSection = () => {
             <Button 
               type="submit" 
               size="icon" 
-              className="h-full aspect-square rounded-none bg-[#8B5CF6] hover:bg-[#7C3AED] text-white transition-colors duration-200"
+              className="h-full aspect-square rounded-none bg-[#1769E8] hover:bg-[#1252BC] text-white transition-colors duration-200"
               aria-label="Search"
             >
               <Search className="h-5 w-5" />
