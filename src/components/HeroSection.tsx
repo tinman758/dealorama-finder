@@ -95,7 +95,6 @@ const HeroSection = () => {
               <Search className="h-5 w-5" />
             </Button>
           </div>
-          <p className="text-sm text-gray-500 mt-2">Find amazing deals from thousands of stores</p>
         </form>
         
         <div className="mt-8 flex flex-wrap justify-center gap-3">
