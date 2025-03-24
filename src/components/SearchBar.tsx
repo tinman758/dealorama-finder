@@ -1,0 +1,114 @@
+
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, X } from 'lucide-react';
+import { searchDeals } from '../data/deals';
+import { Deal } from '../types';
+
+interface SearchBarProps {
+  onClose?: () => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Deal[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Focus the input when search is opened
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (query.length > 1) {
+      setResults(searchDeals(query).slice(0, 5)); // Limit to 5 results
+    } else {
+      setResults([]);
+    }
+  }, [query]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+      if (onClose) onClose();
+    }
+  };
+
+  const handleResultClick = (id: string) => {
+    navigate(`/deal/${id}`);
+    if (onClose) onClose();
+  };
+
+  return (
+    <div className="relative w-full">
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative flex items-center">
+          <Search className="absolute left-3 h-5 w-5 text-gray-400" />
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search for deals, stores, and coupons..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+            className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-200 
+                       focus:outline-none focus:ring-2 focus:ring-deal/40 
+                       bg-white/80 backdrop-blur-sm transition-all duration-200"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="absolute right-3 p-1 rounded-full hover:bg-gray-100 
+                         transition-colors duration-200"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4 text-gray-500" />
+            </button>
+          )}
+        </div>
+      </form>
+
+      {/* Search Results Dropdown */}
+      {isFocused && results.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg 
+                        shadow-medium border border-gray-100 overflow-hidden z-10
+                        animate-scale-in origin-top">
+          <ul className="max-h-80 overflow-y-auto">
+            {results.map((deal) => (
+              <li key={deal.id}>
+                <button
+                  onClick={() => handleResultClick(deal.id)}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 
+                             transition-colors duration-200 flex items-start"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-900 truncate">{deal.title}</p>
+                    <p className="text-sm text-gray-500 truncate">{deal.description}</p>
+                  </div>
+                  <span className="deal-badge ml-2">{deal.discount}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="border-t border-gray-100 p-3">
+            <button
+              onClick={handleSubmit}
+              className="w-full text-center text-sm text-deal font-medium hover:underline"
+            >
+              See all results for "{query}"
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchBar;
