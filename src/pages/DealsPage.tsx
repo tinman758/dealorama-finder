@@ -6,7 +6,8 @@ import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
 import { deals } from '@/data/deals';
 import { Button } from '@/components/ui/button';
-import { Filter, Star } from 'lucide-react';
+import { Filter, Search, Star } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -20,6 +21,7 @@ const DealsPage = () => {
   const [showFeatured, setShowFeatured] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dealTypeFilter, setDealTypeFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Get unique categories from deals data
   const uniqueCategories = Array.from(new Set(deals.map(deal => deal.category)));
@@ -27,6 +29,16 @@ const DealsPage = () => {
   // Handle filters
   const applyFilters = () => {
     let filtered = [...deals];
+    
+    // Apply search filter
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(deal => 
+        deal.title.toLowerCase().includes(query) ||
+        deal.description.toLowerCase().includes(query) ||
+        deal.store.toLowerCase().includes(query)
+      );
+    }
     
     // Apply featured filter
     if (showFeatured) {
@@ -46,10 +58,16 @@ const DealsPage = () => {
     setFilteredDeals(filtered);
   };
   
+  // Handle search submission
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    applyFilters();
+  };
+  
   // Apply filters whenever any filter changes
   React.useEffect(() => {
     applyFilters();
-  }, [showFeatured, categoryFilter, dealTypeFilter]);
+  }, [showFeatured, categoryFilter, dealTypeFilter, searchQuery]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -58,6 +76,20 @@ const DealsPage = () => {
         <div className="container-fluid">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <h1 className="text-3xl font-bold">All Deals</h1>
+            
+            {/* Search Bar */}
+            <form onSubmit={handleSearchSubmit} className="w-full md:w-auto md:min-w-[300px] lg:min-w-[400px]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input 
+                  type="text" 
+                  placeholder="Search deals..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4"
+                />
+              </div>
+            </form>
             
             <div className="flex flex-wrap gap-3">
               {/* Category Filter */}
@@ -116,6 +148,7 @@ const DealsPage = () => {
                   setShowFeatured(false);
                   setCategoryFilter("all");
                   setDealTypeFilter("all");
+                  setSearchQuery("");
                 }}
               >
                 Clear All Filters

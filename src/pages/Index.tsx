@@ -7,6 +7,7 @@ import PopularStores from '@/components/PopularStores';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import AdsCarousel from '@/components/AdsCarousel';
+import SignupCTA from '@/components/SignupCTA';
 
 // Ad data for the carousel
 const advertisements = [
@@ -56,6 +57,9 @@ const Index = () => {
         
         <PopularCategories />
         <PopularStores />
+        
+        {/* Signup CTA Section */}
+        <SignupCTA />
         
         {/* FAQ Section */}
         <FAQ />

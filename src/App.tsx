@@ -35,6 +35,8 @@ const App = () => {
             <Route path="/store/:id" element={<StorePage />} />
             <Route path="/all-stores" element={<AllStores />} />
             <Route path="/all-categories" element={<AllCategories />} />
+            <Route path="/login" element={<NotFound />} /> {/* Placeholder for Login page */}
+            <Route path="/signup" element={<NotFound />} /> {/* Placeholder for Signup page */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
