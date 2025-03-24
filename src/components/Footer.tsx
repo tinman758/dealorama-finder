@@ -45,7 +45,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
           {/* Brand Column */}
           <div>
-            <PennyLogo size="md" className="mb-4" />
+            <PennyLogo size="xxl" className="mb-4" />
             <p className="mt-4 text-sm text-gray-600">
               Find the best deals, discounts, and coupons from your favorite stores. 
               Save money on every purchase.

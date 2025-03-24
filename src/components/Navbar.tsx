@@ -25,7 +25,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 w-full bg-blur-light border-b border-gray-200/50">
       <div className="container-fluid h-16 flex items-center justify-between">
         {/* Logo */}
-        <PennyLogo size={isMobile ? "sm" : "md"} />
+        <PennyLogo size={isMobile ? "md" : "lg"} />
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
