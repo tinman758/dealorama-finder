@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Category } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -8,39 +8,44 @@ export function useCategories() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        
-        const { data, error } = await supabase
-          .from('categories')
-          .select('id, name, slug, icon')
-          .order('name');
-        
-        if (error) throw error;
-        
-        // Map to ensure we're properly formatting our category objects
-        const formattedCategories: Category[] = (data || []).map(item => ({
-          id: item.id,
-          name: item.name,
-          slug: item.slug,
-          icon: item.icon || undefined
-        }));
-        
-        setCategories(formattedCategories);
-      } catch (err: any) {
-        console.error('Error fetching categories:', err);
-        setError('Failed to load categories');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+  const fetchCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name, slug, icon')
+        .order('name');
+      
+      if (error) throw error;
+      
+      // Map to ensure we're properly formatting our category objects
+      const formattedCategories: Category[] = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        slug: item.slug,
+        icon: item.icon || undefined
+      }));
+      
+      setCategories(formattedCategories);
+    } catch (err: any) {
+      console.error('Error fetching categories:', err);
+      setError('Failed to load categories');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { categories, loading, error };
+  // Expose refetchCategories function to manually trigger a refresh
+  const refetchCategories = useCallback(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  return { categories, loading, error, refetchCategories };
 }
 
 export function useCategory(slug: string) {

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ const AdminCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const { categories, loading, error } = useCategories();
+  const { categories, loading, error, refetchCategories } = useCategories();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState<Partial<Category>>({
@@ -101,6 +101,10 @@ const AdminCategories = () => {
       // Reset form and close dialog
       resetForm();
       setShowAddDialog(false);
+      
+      // Refresh the categories list
+      refetchCategories();
+      
     } catch (error: any) {
       console.error('Error saving category:', error);
       toast.error(error.message || 'Failed to save category');
@@ -122,6 +126,8 @@ const AdminCategories = () => {
       if (error) throw error;
       
       toast.success('Category deleted successfully');
+      // Refresh the categories list after deletion
+      refetchCategories();
     } catch (error: any) {
       console.error('Error deleting category:', error);
       toast.error(error.message || 'Failed to delete category');
