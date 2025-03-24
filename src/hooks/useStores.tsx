@@ -38,8 +38,22 @@ export function useStores(options?: {
         const { data, error } = await query.order('name');
         
         if (error) throw error;
+
+        // Map the database columns to our interface properties
+        const mappedStores = (data || []).map(store => ({
+          id: store.id,
+          name: store.name,
+          logo: store.logo,
+          category: store.category,
+          featured: store.featured || false,
+          dealCount: store.deal_count || 0,
+          url: store.url,
+          storeType: store.store_type as 'online' | 'local' | 'both' || 'online',
+          country: store.country || undefined,
+          description: store.description || undefined
+        }));
         
-        setStores(data || []);
+        setStores(mappedStores);
       } catch (err) {
         console.error('Error fetching stores:', err);
         setError('Failed to load stores');
@@ -72,7 +86,23 @@ export function useStore(id: string) {
         
         if (error) throw error;
         
-        setStore(data);
+        // Map the database columns to our interface properties
+        if (data) {
+          const mappedStore: Store = {
+            id: data.id,
+            name: data.name,
+            logo: data.logo,
+            category: data.category,
+            featured: data.featured || false,
+            dealCount: data.deal_count || 0,
+            url: data.url,
+            storeType: data.store_type as 'online' | 'local' | 'both' || 'online',
+            country: data.country || undefined,
+            description: data.description || undefined
+          };
+          
+          setStore(mappedStore);
+        }
       } catch (err) {
         console.error('Error fetching store:', err);
         setError('Failed to load store');

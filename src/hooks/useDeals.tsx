@@ -49,7 +49,28 @@ export function useDeals(options?: {
         
         if (error) throw error;
         
-        setDeals(data || []);
+        // Map the database columns to our interface properties
+        const mappedDeals = (data || []).map(deal => ({
+          id: deal.id,
+          title: deal.title,
+          description: deal.description,
+          code: deal.code || undefined,
+          discount: deal.discount,
+          expiryDate: deal.expiry_date || undefined,
+          storeId: deal.store_id,
+          verified: deal.verified || false,
+          featured: deal.featured || false,
+          url: deal.url,
+          image: deal.image || undefined,
+          category: deal.category,
+          usedCount: deal.used_count || 0,
+          type: deal.type as 'code' | 'link' | 'product' || 'code',
+          price: deal.price || undefined,
+          originalPrice: deal.original_price || undefined,
+          productImage: deal.product_image || undefined
+        }));
+        
+        setDeals(mappedDeals);
       } catch (err) {
         console.error('Error fetching deals:', err);
         setError('Failed to load deals');
@@ -82,7 +103,30 @@ export function useDeal(id: string) {
         
         if (error) throw error;
         
-        setDeal(data);
+        // Map the database columns to our interface properties
+        if (data) {
+          const mappedDeal: Deal = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            code: data.code || undefined,
+            discount: data.discount,
+            expiryDate: data.expiry_date || undefined,
+            storeId: data.store_id,
+            verified: data.verified || false,
+            featured: data.featured || false,
+            url: data.url,
+            image: data.image || undefined,
+            category: data.category,
+            usedCount: data.used_count || 0,
+            type: data.type as 'code' | 'link' | 'product' || 'code',
+            price: data.price || undefined,
+            originalPrice: data.original_price || undefined,
+            productImage: data.product_image || undefined
+          };
+          
+          setDeal(mappedDeal);
+        }
       } catch (err) {
         console.error('Error fetching deal:', err);
         setError('Failed to load deal');
