@@ -5,7 +5,8 @@ import {
   CarouselContent, 
   CarouselItem, 
   CarouselNext, 
-  CarouselPrevious 
+  CarouselPrevious,
+  type CarouselApi
 } from '@/components/ui/carousel';
 import AdvertisementBanner from './AdvertisementBanner';
 
@@ -26,6 +27,24 @@ interface AdsCarouselProps {
 
 const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi | null>(null);
+
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const handleSelect = () => {
+      setActiveIndex(api.selectedScrollSnap());
+    };
+
+    api.on("select", handleSelect);
+
+    // Cleanup
+    return () => {
+      api.off("select", handleSelect);
+    };
+  }, [api]);
 
   return (
     <div className="relative rounded-xl overflow-hidden">
@@ -35,12 +54,7 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
           loop: true,
           align: "start",
         }}
-        onSelect={(api) => {
-          // Update active index when carousel changes
-          if (api) {
-            setActiveIndex(api.selectedScrollSnap());
-          }
-        }}
+        setApi={setApi}
       >
         <CarouselContent>
           {ads.map((ad) => (
