@@ -94,8 +94,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         toast.success('Successfully logged in', {
           description: 'Welcome back to DealFinder!',
           position: 'top-center',
-          duration: 2000, // Reduced from 3000 to 2000 for faster fadeaway
-          className: 'bg-gradient-to-r from-deal to-deal-dark text-white/90', // Lighter text with 90% opacity
+          duration: 2000, // Reduced for faster fadeaway
+          className: 'bg-gradient-to-r from-deal to-deal-dark text-white', // Changed from text-white/90 to text-white
           icon: '👋',
           style: {
             border: '1px solid rgba(255, 255, 255, 0.2)',
