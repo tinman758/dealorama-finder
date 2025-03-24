@@ -17,19 +17,19 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   }
 });
 
-// Helper function to check if the user is admin
+// Helper function to check if the user is admin using user_profiles view
 export const isAdmin = async (userId: string | undefined): Promise<boolean> => {
   if (!userId) return false;
   
   try {
     const { data, error } = await supabase
-      .from('admin_users')
-      .select('role')
-      .eq('user_id', userId)
+      .from('user_profiles')
+      .select('is_admin')
+      .eq('id', userId)
       .single();
     
     if (error) throw error;
-    return !!data;
+    return data?.is_admin || false;
   } catch (error) {
     console.error('Error checking admin status:', error);
     return false;

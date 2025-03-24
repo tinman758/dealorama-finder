@@ -17,24 +17,47 @@ const AdminDashboard = () => {
     const fetchCounts = async () => {
       setLoading(true);
       try {
-        // For now, we'll use mock data since these tables don't exist in Supabase yet
-        // In a real implementation, you would query these tables
-        
-        // Count admin users - this is the only table we know exists
-        const { count: adminCount, error: adminError } = await supabase
-          .from('admin_users')
+        // Get user count
+        const { count: userCount, error: userError } = await supabase
+          .from('user_profiles')
           .select('*', { count: 'exact', head: true });
           
-        if (adminError) {
-          console.error('Error fetching admin count:', adminError);
+        if (userError) {
+          console.error('Error fetching user count:', userError);
         }
 
-        // For the rest, use mock data
+        // Get deals count
+        const { count: dealCount, error: dealError } = await supabase
+          .from('deals')
+          .select('*', { count: 'exact', head: true });
+          
+        if (dealError) {
+          console.error('Error fetching deal count:', dealError);
+        }
+
+        // Get stores count
+        const { count: storeCount, error: storeError } = await supabase
+          .from('stores')
+          .select('*', { count: 'exact', head: true });
+          
+        if (storeError) {
+          console.error('Error fetching store count:', storeError);
+        }
+
+        // Get categories count
+        const { count: categoryCount, error: categoryError } = await supabase
+          .from('categories')
+          .select('*', { count: 'exact', head: true });
+          
+        if (categoryError) {
+          console.error('Error fetching category count:', categoryError);
+        }
+
         setCounts({
-          users: adminCount || 0,
-          deals: 5,
-          stores: 10,
-          categories: 8,
+          users: userCount || 0,
+          deals: dealCount || 0,
+          stores: storeCount || 0,
+          categories: categoryCount || 0,
         });
       } catch (error) {
         console.error('Error fetching counts:', error);

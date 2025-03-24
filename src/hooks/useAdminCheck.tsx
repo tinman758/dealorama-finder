@@ -20,19 +20,42 @@ export const useAdminCheck = () => {
       }
 
       try {
-        const { data, error } = await supabase
+        // First check from user_profiles if they're an admin
+        const { data: profileData, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error checking admin status from profile:', profileError);
+          setIsAdmin(false);
+          setAdminRole(null);
+          setIsAdminLoading(false);
+          return;
+        }
+
+        if (!profileData.is_admin) {
+          setIsAdmin(false);
+          setAdminRole(null);
+          setIsAdminLoading(false);
+          return;
+        }
+
+        // If they are an admin, get their role
+        const { data: adminData, error: adminError } = await supabase
           .from('admin_users')
           .select('role')
           .eq('user_id', user.id)
           .single();
 
-        if (error) {
-          console.error('Error checking admin status:', error);
-          setIsAdmin(false);
+        if (adminError) {
+          console.error('Error getting admin role:', adminError);
+          setIsAdmin(true); // We know they're an admin from user_profiles
           setAdminRole(null);
         } else {
           setIsAdmin(true);
-          setAdminRole(data?.role || null);
+          setAdminRole(adminData?.role || null);
         }
       } catch (error) {
         console.error('Error in admin check:', error);

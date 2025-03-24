@@ -28,7 +28,7 @@ const AdminUsers = () => {
   const [adminIdInput, setAdminIdInput] = useState('');
   const [adminRole, setAdminRole] = useState('editor');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { makeAdmin } = useAuth();
+  const { makeAdmin, removeAdmin } = useAuth();
 
   useEffect(() => {
     fetchUsers();
@@ -38,58 +38,31 @@ const AdminUsers = () => {
     try {
       setLoading(true);
       
-      // First, get all admin users to identify which users are admins
+      // Fetch all users from the user_profiles view
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('user_profiles')
+        .select('*');
+        
+      if (profilesError) throw profilesError;
+      
+      // Fetch admin users to get their roles
       const { data: adminData, error: adminError } = await supabase
         .from('admin_users')
-        .select('id, user_id, role, created_at');
+        .select('id, user_id, role');
         
       if (adminError) throw adminError;
 
-      // For a production app, we would create a secure backend API or Edge Function 
-      // to fetch user information from auth.users
-      // For this demo, we'll display the admin users we have and add some mock regular users
+      // Combine the data
+      const usersWithAdminInfo = profilesData.map((profile) => {
+        const adminInfo = adminData.find(admin => admin.user_id === profile.id);
+        return {
+          ...profile,
+          role: adminInfo?.role || null,
+          admin_id: adminInfo?.id || null
+        };
+      });
       
-      const adminUsers: User[] = adminData.map((admin) => ({
-        id: admin.user_id,
-        email: `admin-${admin.user_id.substring(0, 6)}@example.com`,
-        name: `Admin User ${admin.user_id.substring(0, 4)}`,
-        created_at: admin.created_at,
-        last_sign_in_at: new Date().toISOString(),
-        is_admin: true,
-        role: admin.role,
-        admin_id: admin.id
-      }));
-      
-      // Add some mock regular users for demonstration
-      const regularUsers: User[] = [
-        {
-          id: 'reg-user-1',
-          email: 'user1@example.com',
-          name: 'Regular User 1',
-          created_at: new Date().toISOString(),
-          last_sign_in_at: new Date().toISOString(),
-          is_admin: false
-        },
-        {
-          id: 'reg-user-2',
-          email: 'user2@example.com',
-          name: 'Regular User 2',
-          created_at: new Date().toISOString(),
-          last_sign_in_at: null,
-          is_admin: false
-        },
-        {
-          id: 'reg-user-3',
-          email: 'user3@example.com',
-          name: 'Regular User 3',
-          created_at: new Date().toISOString(),
-          last_sign_in_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
-          is_admin: false
-        }
-      ];
-      
-      // Combine admin and regular users
-      setUsers([...adminUsers, ...regularUsers]);
+      setUsers(usersWithAdminInfo);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Failed to fetch users');
@@ -119,7 +92,6 @@ const AdminUsers = () => {
 
   const handleRemoveAdmin = async (adminId: string) => {
     try {
-      const { removeAdmin } = useAuth();
       const success = await removeAdmin(adminId);
       if (success) {
         fetchUsers(); // Refresh the user list
