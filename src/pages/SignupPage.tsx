@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { User, Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner'; // Add the import for toast
 
 import AuthLayout from '@/components/auth/AuthLayout';
 import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
@@ -110,7 +111,8 @@ const SignupPage = () => {
       form.reset();
     } catch (error: any) {
       console.error("Signup error:", error);
-      const errorMessage = error?.message || "Please try again or contact support if the problem persists";
+      // Changed from const to let to allow reassignment
+      let errorMessage = error?.message || "Please try again or contact support if the problem persists";
       
       // Display appropriate error message
       if (error?.message?.includes("already registered")) {
