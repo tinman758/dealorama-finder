@@ -64,8 +64,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       
       if (!error) {
-        toast.success('Account created successfully!', {
-          description: 'Please check your email to verify your account.'
+        toast.success('Account created successfully! 🎉', {
+          description: 'Please check your email inbox to verify your account. Once verified, you can log in and start exploring the best deals!',
+          duration: 6000,
+          action: {
+            label: 'Go to Login',
+            onClick: () => navigate('/login'),
+          },
+          icon: '✉️',
         })
       }
       
