@@ -12,7 +12,7 @@ type AuthContextType = {
   signUp: (email: string, password: string, meta?: { name?: string }) => Promise<{ error: AuthError | null }>
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  signInWithSocial: (provider: Provider) => Promise<{ error: AuthError | null } | undefined>
+  signInWithSocial: (provider: Provider) => Promise<{ error: AuthError | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -107,12 +107,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
-      
-      if (error) {
-        toast.error(`Failed to sign in with ${provider}`, {
-          description: error.message
-        })
-      }
       
       return { error }
     } catch (error) {

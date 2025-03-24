@@ -16,16 +16,15 @@ const SocialLoginButtons = ({ action }: SocialLoginButtonsProps) => {
   const [isLoading, setIsLoading] = useState<Provider | null>(null);
   const [showSupabaseAlert, setShowSupabaseAlert] = useState(false);
 
-  // Handle social login
+  // Handle social login with improved error handling
   const handleSocialLogin = async (provider: Provider) => {
     setIsLoading(provider);
+    
     try {
       const result = await signInWithSocial(provider);
       
-      // Check if there was an error that indicates Supabase is not configured
       if (result?.error) {
-        console.error(`${provider} login error:`, result.error);
-        
+        // Handle error based on type
         if (result.error.message?.includes('Supabase not configured')) {
           setShowSupabaseAlert(true);
           toast.error('Supabase configuration missing', {
