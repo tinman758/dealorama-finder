@@ -14,7 +14,8 @@ export const deals: Deal[] = [
     featured: true,
     url: "#",
     category: "fashion",
-    usedCount: 458
+    usedCount: 458,
+    type: "code"
   },
   {
     id: "2",
@@ -27,7 +28,8 @@ export const deals: Deal[] = [
     featured: true,
     url: "#",
     category: "electronics",
-    usedCount: 325
+    usedCount: 325,
+    type: "link"
   },
   {
     id: "3",
@@ -40,7 +42,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "home",
-    usedCount: 287
+    usedCount: 287,
+    type: "code"
   },
   {
     id: "4",
@@ -54,7 +57,8 @@ export const deals: Deal[] = [
     featured: true,
     url: "#",
     category: "travel",
-    usedCount: 189
+    usedCount: 189,
+    type: "code"
   },
   {
     id: "5",
@@ -67,7 +71,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "fashion",
-    usedCount: 276
+    usedCount: 276,
+    type: "code"
   },
   {
     id: "6",
@@ -80,7 +85,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "beauty",
-    usedCount: 153
+    usedCount: 153,
+    type: "code"
   },
   {
     id: "7",
@@ -91,7 +97,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "electronics",
-    usedCount: 421
+    usedCount: 421,
+    type: "link"
   },
   {
     id: "8",
@@ -103,7 +110,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "food",
-    usedCount: 176
+    usedCount: 176,
+    type: "link"
   },
   {
     id: "9",
@@ -116,7 +124,8 @@ export const deals: Deal[] = [
     featured: true,
     url: "#",
     category: "beauty",
-    usedCount: 285
+    usedCount: 285,
+    type: "link"
   },
   {
     id: "10",
@@ -128,7 +137,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "home",
-    usedCount: 329
+    usedCount: 329,
+    type: "link"
   },
   {
     id: "11",
@@ -140,7 +150,8 @@ export const deals: Deal[] = [
     verified: true,
     url: "#",
     category: "beauty",
-    usedCount: 198
+    usedCount: 198,
+    type: "link"
   },
   {
     id: "12",
@@ -153,7 +164,58 @@ export const deals: Deal[] = [
     featured: true,
     url: "#",
     category: "fashion",
-    usedCount: 476
+    usedCount: 476,
+    type: "link"
+  },
+  // Adding product-based deals
+  {
+    id: "13",
+    title: "Apple AirPods Pro (2nd Generation)",
+    description: "Experience the magic of AirPods Pro with Active Noise Cancellation, Transparency mode, and Spatial Audio.",
+    discount: "20% OFF",
+    expiryDate: "2023-12-31",
+    storeId: "3",
+    verified: true,
+    featured: true,
+    url: "#",
+    category: "electronics",
+    usedCount: 342,
+    type: "product",
+    price: "$199.99",
+    originalPrice: "$249.99",
+    productImage: "https://logo.clearbit.com/apple.com"
+  },
+  {
+    id: "14",
+    title: "Samsung 65-inch QLED 4K Smart TV",
+    description: "Experience stunning 4K resolution and Quantum Dot technology for incredible color and contrast.",
+    discount: "$300 OFF",
+    expiryDate: "2023-12-25",
+    storeId: "7",
+    verified: true,
+    url: "#",
+    category: "electronics",
+    usedCount: 215,
+    type: "product",
+    price: "$999.99",
+    originalPrice: "$1,299.99",
+    productImage: "https://logo.clearbit.com/samsung.com"
+  },
+  {
+    id: "15",
+    title: "Nike Air Max 270 Running Shoes",
+    description: "Stylish and comfortable running shoes with Nike's largest Air unit yet for soft cushioning.",
+    discount: "30% OFF",
+    expiryDate: "2023-12-20",
+    storeId: "2",
+    verified: true,
+    url: "#",
+    category: "fashion",
+    usedCount: 427,
+    type: "product",
+    price: "$105.97",
+    originalPrice: "$150.00",
+    productImage: "https://logo.clearbit.com/nike.com"
   }
 ];
 
