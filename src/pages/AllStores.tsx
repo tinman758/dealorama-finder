@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useStores } from '@/hooks/useStores';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Star, Filter, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {

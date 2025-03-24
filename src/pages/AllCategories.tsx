@@ -26,17 +26,9 @@ const AllCategories = () => {
         // Get all stores to count manually by category
         const { data: storeData, error: storeError } = await supabase
           .from('stores')
-          .select('category');
+          .select('category, featured');
         
         if (storeError) throw storeError;
-        
-        // Get featured stores to count manually by category
-        const { data: featuredStoreData, error: featuredStoreError } = await supabase
-          .from('stores')
-          .select('category')
-          .eq('featured', true);
-        
-        if (featuredStoreError) throw featuredStoreError;
         
         // Create mappings of category to store count by manually counting
         const storeCountsMap: Record<string, number> = {};
@@ -47,15 +39,11 @@ const AllCategories = () => {
           storeData.forEach(item => {
             if (item.category) {
               storeCountsMap[item.category] = (storeCountsMap[item.category] || 0) + 1;
-            }
-          });
-        }
-        
-        // Count featured stores by category
-        if (featuredStoreData) {
-          featuredStoreData.forEach(item => {
-            if (item.category) {
-              featuredStoreCountsMap[item.category] = (featuredStoreCountsMap[item.category] || 0) + 1;
+              
+              // Count featured stores separately
+              if (item.featured) {
+                featuredStoreCountsMap[item.category] = (featuredStoreCountsMap[item.category] || 0) + 1;
+              }
             }
           });
         }
