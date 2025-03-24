@@ -27,6 +27,7 @@ const AdminStores = () => {
     name: '',
     logo: '',
     category: '',
+    categoryId: '',
     url: '',
     description: '',
     storeType: 'online',
@@ -38,6 +39,7 @@ const AdminStores = () => {
       name: '',
       logo: '',
       category: '',
+      categoryId: '',
       url: '',
       description: '',
       storeType: 'online',
@@ -56,11 +58,21 @@ const AdminStores = () => {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'categoryId') {
+      // When category ID is selected, also update the category name for backward compatibility
+      const selectedCategory = categories.find(cat => cat.id === value);
+      setFormData(prev => ({ 
+        ...prev, 
+        [name]: value,
+        category: selectedCategory?.name || prev.category 
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleAddOrEditStore = async () => {
-    if (!formData.name || !formData.logo || !formData.category || !formData.url) {
+    if (!formData.name || !formData.logo || !formData.categoryId || !formData.url) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -71,7 +83,8 @@ const AdminStores = () => {
       const storeData = {
         name: formData.name,
         logo: formData.logo,
-        category: formData.category,
+        category: formData.category, // Keep for backward compatibility
+        category_id: formData.categoryId, // Use the new relationship
         url: formData.url,
         description: formData.description || '',
         store_type: formData.storeType,
@@ -133,6 +146,7 @@ const AdminStores = () => {
       name: store.name,
       logo: store.logo,
       category: store.category,
+      categoryId: store.categoryId || '', // Use the new field
       url: store.url,
       description: store.description || '',
       storeType: store.storeType || 'online',
@@ -165,6 +179,13 @@ const AdminStores = () => {
   if (error) {
     return <div className="p-4 text-red-500">Error loading stores: {error}</div>;
   }
+
+  // Function to get category name from ID
+  const getCategoryNameById = (categoryId: string | undefined) => {
+    if (!categoryId) return 'Unknown';
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Unknown';
+  };
 
   return (
     <div>
@@ -236,17 +257,17 @@ const AdminStores = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
+                  <Label htmlFor="categoryId">Category *</Label>
                   <Select
-                    value={formData.category}
-                    onValueChange={(value) => handleSelectChange('category', value)}
+                    value={formData.categoryId}
+                    onValueChange={(value) => handleSelectChange('categoryId', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
+                        <SelectItem key={category.id} value={category.id}>
                           {category.name}
                         </SelectItem>
                       ))}
@@ -343,7 +364,9 @@ const AdminStores = () => {
                         <span className="font-medium">{store.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{store.category}</TableCell>
+                    <TableCell>
+                      {store.categoryId ? getCategoryNameById(store.categoryId) : store.category}
+                    </TableCell>
                     <TableCell>
                       <a href={store.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                         {store.url}

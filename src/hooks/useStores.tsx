@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 export function useStores(options?: { 
   featured?: boolean, 
   category?: string,
+  categoryId?: string,
   limit?: number,
   search?: string
 }) {
@@ -20,13 +21,17 @@ export function useStores(options?: {
         
         let query = supabase
           .from('stores')
-          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description');
+          .select('id, name, logo, category, category_id, featured, deal_count, url, store_type, country, description');
         
         if (options?.featured) {
           query = query.eq('featured', true);
         }
         
-        if (options?.category) {
+        if (options?.categoryId) {
+          // Use the new category_id field if provided
+          query = query.eq('category_id', options.categoryId);
+        } else if (options?.category) {
+          // Fallback to using the category name for backward compatibility
           query = query.eq('category', options.category);
         }
         
@@ -48,6 +53,7 @@ export function useStores(options?: {
           name: store.name,
           logo: store.logo,
           category: store.category,
+          categoryId: store.category_id, // Add the new field
           featured: store.featured || false,
           dealCount: store.deal_count || 0,
           url: store.url,
@@ -66,7 +72,7 @@ export function useStores(options?: {
     };
 
     fetchStores();
-  }, [options?.featured, options?.category, options?.limit, options?.search]);
+  }, [options?.featured, options?.category, options?.categoryId, options?.limit, options?.search]);
 
   return { stores, loading, error };
 }
@@ -83,7 +89,7 @@ export function useStore(id: string) {
         
         const { data, error } = await supabase
           .from('stores')
-          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description')
+          .select('id, name, logo, category, category_id, featured, deal_count, url, store_type, country, description')
           .eq('id', id)
           .single();
         
@@ -96,6 +102,7 @@ export function useStore(id: string) {
             name: data.name,
             logo: data.logo,
             category: data.category,
+            categoryId: data.category_id, // Add the new field
             featured: data.featured || false,
             dealCount: data.deal_count || 0,
             url: data.url,

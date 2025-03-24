@@ -24,6 +24,7 @@ export interface Store {
   name: string;
   logo: string;
   category: string;
+  categoryId?: string;     // New field to reference the category by ID
   featured?: boolean;
   dealCount: number;
   url: string;

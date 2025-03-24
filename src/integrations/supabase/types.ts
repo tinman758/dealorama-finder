@@ -197,6 +197,7 @@ export type Database = {
       stores: {
         Row: {
           category: string
+          category_id: string | null
           country: string | null
           created_at: string | null
           deal_count: number | null
@@ -211,6 +212,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          category_id?: string | null
           country?: string | null
           created_at?: string | null
           deal_count?: number | null
@@ -225,6 +227,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          category_id?: string | null
           country?: string | null
           created_at?: string | null
           deal_count?: number | null
@@ -237,7 +240,15 @@ export type Database = {
           updated_at?: string | null
           url?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "stores_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
