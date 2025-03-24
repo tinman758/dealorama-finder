@@ -11,16 +11,16 @@ const AllCategories = () => {
   const { categories, loading, error } = useCategories();
   const [showFeatured, setShowFeatured] = useState(false);
   
-  // Get counts of stores per category
+  // This would ideally come from the database in a future implementation
   const getCategoryStoreCount = (categorySlug: string) => {
-    // This will be populated from the database in future improvements
-    return Math.floor(Math.random() * 20) + 1; // Temporary random count until we implement actual count
+    // Placeholder until we implement actual count from database
+    return Math.floor(Math.random() * 20) + 1;
   };
   
-  // Get featured stores count per category
+  // This would ideally come from the database in a future implementation
   const getFeaturedStoreCount = (categorySlug: string) => {
-    // This will be populated from the database in future improvements
-    return Math.floor(Math.random() * 5); // Temporary random count until we implement actual count
+    // Placeholder until we implement actual count from database
+    return Math.floor(Math.random() * 5);
   };
   
   // Filter categories based on featured toggle
