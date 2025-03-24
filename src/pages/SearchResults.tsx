@@ -167,7 +167,7 @@ const SearchResults = () => {
                 <p className="text-gray-600 mb-6">
                   We couldn't find any deals matching "{query}"
                 </p>
-                <Link to="/" className="deal-button inline-flex items-center">
+                <Link to="/deals" className="deal-button inline-flex items-center">
                   Browse All Deals
                 </Link>
               </div>
