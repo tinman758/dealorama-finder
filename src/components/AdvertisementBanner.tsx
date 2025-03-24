@@ -30,7 +30,7 @@ const AdvertisementBanner = ({
             <p className="text-lg opacity-90 mb-6 max-w-xl">{description}</p>
             <Button
               variant="outline"
-              className="border-2 border-current hover:bg-white/10"
+              className="border-2 border-current hover:bg-white/10 text-black"
               asChild
             >
               <a href={ctaLink} target="_blank" rel="noopener noreferrer">
