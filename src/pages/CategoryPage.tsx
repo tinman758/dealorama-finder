@@ -1,28 +1,22 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
-import { getDealsForCategory } from '@/data/deals';
-import { getStoresByCategory } from '@/data/stores';
+import { useDeals } from '@/hooks/useDeals';
+import { useStores } from '@/hooks/useStores';
+import { useCategory } from '@/hooks/useCategories';
 import { Deal, Store } from '@/types';
-
-const categories = {
-  fashion: "Fashion",
-  electronics: "Electronics",
-  beauty: "Beauty",
-  home: "Home",
-  travel: "Travel",
-  food: "Food",
-  general: "General",
-};
 
 type SortOption = 'newest' | 'popular' | 'expiring';
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
+  const { deals: allDeals, loading: dealsLoading } = useDeals({ category });
+  const { stores: categoryStores, loading: storesLoading } = useStores({ category });
+  const { category: categoryData, loading: categoryLoading } = category ? useCategory(category) : { category: null, loading: false };
+  
   const [deals, setDeals] = useState<Deal[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,20 +24,15 @@ const CategoryPage = () => {
   const [sortBy, setSortBy] = useState<SortOption>('popular');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   
-  const categoryName = category && category in categories 
-    ? categories[category as keyof typeof categories] 
-    : "All Categories";
+  const categoryName = categoryData?.name || "All Categories";
 
   useEffect(() => {
-    if (category) {
-      setLoading(true);
-      
-      // Get category deals and stores
-      const categoryDeals = getDealsForCategory(category);
-      const categoryStores = getStoresByCategory(category);
+    // Update local state when data is loaded from hooks
+    if (!dealsLoading && !storesLoading) {
+      setStores(categoryStores);
       
       // Sort deals based on the selected option
-      let sortedDeals = [...categoryDeals];
+      let sortedDeals = [...allDeals];
       
       if (sortBy === 'popular') {
         sortedDeals.sort((a, b) => (b.usedCount || 0) - (a.usedCount || 0));
@@ -54,28 +43,25 @@ const CategoryPage = () => {
           return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
         });
       } else {
-        // 'newest' - no need to sort as we assume the data is already in newest first order
+        // 'newest' - already sorted by created_at in the hook
       }
       
       setDeals(sortedDeals);
-      setStores(categoryStores);
       
       // Reset visible deals count when category changes
       setVisibleDeals(8);
-      
-      // Simulate loading
-      setTimeout(() => {
-        setLoading(false);
-      }, 300);
+      setLoading(false);
+    } else {
+      setLoading(true);
     }
-  }, [category, sortBy]);
+  }, [allDeals, categoryStores, dealsLoading, storesLoading, sortBy]);
   
   const handleSortChange = (option: SortOption) => {
     setSortBy(option);
     setSortMenuOpen(false);
   };
   
-  if (loading) {
+  if (loading || dealsLoading || storesLoading || categoryLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -94,7 +80,7 @@ const CategoryPage = () => {
     );
   }
   
-  if (!category || !(category in categories)) {
+  if (!category) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />

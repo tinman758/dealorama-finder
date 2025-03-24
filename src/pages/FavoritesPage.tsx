@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -7,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Deal } from '@/types';
-import { getDealById } from '@/data/deals';
-import DealCard from '@/components/DealCard';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -32,22 +29,53 @@ const FavoritesPage = () => {
       
       try {
         setIsLoadingFavorites(true);
-        const { data, error } = await supabase
+        
+        // First get favorite deal IDs
+        const { data: favoriteData, error: favoriteError } = await supabase
           .from('favorites')
           .select('deal_id')
           .eq('user_id', user.id);
           
-        if (error) throw error;
+        if (favoriteError) throw favoriteError;
         
-        // Get the deal objects using the deal IDs
-        if (data) {
-          const deals = data.map(fav => {
-            const deal = getDealById(fav.deal_id);
-            return deal;
-          }).filter(Boolean) as Deal[]; // Filter out any null values
-          
-          setFavoriteDeals(deals);
+        if (!favoriteData || favoriteData.length === 0) {
+          setFavoriteDeals([]);
+          setIsLoadingFavorites(false);
+          return;
         }
+        
+        // Get the actual deal data from the deals table
+        const dealIds = favoriteData.map(fav => fav.deal_id);
+        
+        const { data: dealsData, error: dealsError } = await supabase
+          .from('deals')
+          .select('*')
+          .in('id', dealIds);
+          
+        if (dealsError) throw dealsError;
+        
+        // Map the database columns to our interface properties
+        const mappedDeals = (dealsData || []).map(deal => ({
+          id: deal.id,
+          title: deal.title,
+          description: deal.description,
+          code: deal.code || undefined,
+          discount: deal.discount,
+          expiryDate: deal.expiry_date || undefined,
+          storeId: deal.store_id,
+          verified: deal.verified || false,
+          featured: deal.featured || false,
+          url: deal.url,
+          image: deal.image || undefined,
+          category: deal.category,
+          usedCount: deal.used_count || 0,
+          type: deal.type as 'code' | 'link' | 'product' || 'code',
+          price: deal.price || undefined,
+          originalPrice: deal.original_price || undefined,
+          productImage: deal.product_image || undefined
+        }));
+        
+        setFavoriteDeals(mappedDeals);
       } catch (error) {
         console.error('Error fetching favorites:', error);
         toast({

@@ -1,42 +1,32 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, Globe, MapPin, Info } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
-import { getDealsForStore } from '@/data/deals';
-import { getStoreById } from '@/data/stores';
+import { useDeals } from '@/hooks/useDeals';
+import { useStore } from '@/hooks/useStores';
 import { Deal } from '@/types';
 
 const StorePage = () => {
   const { id } = useParams<{ id: string }>();
-  const [store, setStore] = useState(null);
+  const { store, loading: storeLoading } = id ? useStore(id) : { store: null, loading: false };
+  const { deals: storeDeals, loading: dealsLoading } = useDeals({ storeId: id });
+  
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleDeals, setVisibleDeals] = useState(8);
   
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      
-      const storeData = getStoreById(id);
-      const storeDeals = getDealsForStore(id);
-      
-      setStore(storeData);
+    if (!storeLoading && !dealsLoading) {
       setDeals(storeDeals);
-      
-      // Reset visible deals count when store changes
-      setVisibleDeals(8);
-      
-      // Simulate loading
-      setTimeout(() => {
-        setLoading(false);
-      }, 300);
+      setLoading(false);
+    } else {
+      setLoading(true);
     }
-  }, [id]);
+  }, [storeDeals, storeLoading, dealsLoading]);
   
-  if (loading) {
+  if (loading || storeLoading || dealsLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -79,7 +69,6 @@ const StorePage = () => {
       <Navbar />
       <main className="flex-grow py-12 sm:py-16 container-fluid">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="mb-10">
             <ol className="flex items-center space-x-2 text-sm text-gray-600">
               <li>
@@ -100,7 +89,6 @@ const StorePage = () => {
             </ol>
           </nav>
           
-          {/* Store Header */}
           <div className="mb-8 flex items-center">
             <div className="bg-white p-6 rounded-lg shadow-soft mr-6">
               <img 
@@ -117,7 +105,6 @@ const StorePage = () => {
             </div>
           </div>
 
-          {/* Store Info Section */}
           <div className="bg-white rounded-lg shadow-soft p-6 mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
               <Info className="mr-2 h-5 w-5 text-deal" />
@@ -166,7 +153,6 @@ const StorePage = () => {
             </div>
           </div>
           
-          {/* Deals Section */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Deals</h2>
             

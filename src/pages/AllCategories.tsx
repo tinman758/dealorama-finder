@@ -23,22 +23,20 @@ const AllCategories = () => {
       try {
         setLoadingCounts(true);
         
-        // Get all store counts by category
+        // Get counts for all stores by category using PostgreSQL count
         const { data: storeCountData, error: storeCountError } = await supabase
           .from('stores')
-          .select('category, count')
-          .order('category')
-          .group('category');
+          .select('category, count(*)')
+          .order('category');
         
         if (storeCountError) throw storeCountError;
         
         // Get counts for featured stores by category
         const { data: featuredStoreData, error: featuredStoreError } = await supabase
           .from('stores')
-          .select('category, count')
+          .select('category, count(*)')
           .eq('featured', true)
-          .order('category')
-          .group('category');
+          .order('category');
         
         if (featuredStoreError) throw featuredStoreError;
         
@@ -46,15 +44,23 @@ const AllCategories = () => {
         const storeCountsMap: Record<string, number> = {};
         const featuredStoreCountsMap: Record<string, number> = {};
         
-        // Populate store counts
-        storeCountData?.forEach(item => {
-          storeCountsMap[item.category] = item.count;
-        });
+        // Process store counts by iterating over data and aggregating manually
+        if (storeCountData) {
+          // Group by category and count
+          storeCountData.forEach(item => {
+            const category = item.category;
+            storeCountsMap[category] = (storeCountsMap[category] || 0) + 1;
+          });
+        }
         
-        // Populate featured store counts
-        featuredStoreData?.forEach(item => {
-          featuredStoreCountsMap[item.category] = item.count;
-        });
+        // Process featured store counts
+        if (featuredStoreData) {
+          // Group by category and count
+          featuredStoreData.forEach(item => {
+            const category = item.category;
+            featuredStoreCountsMap[category] = (featuredStoreCountsMap[category] || 0) + 1;
+          });
+        }
         
         setStoreCounts(storeCountsMap);
         setFeaturedStoreCounts(featuredStoreCountsMap);
