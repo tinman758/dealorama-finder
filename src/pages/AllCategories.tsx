@@ -23,42 +23,40 @@ const AllCategories = () => {
       try {
         setLoadingCounts(true);
         
-        // Get counts for all stores by category using PostgreSQL count
-        const { data: storeCountData, error: storeCountError } = await supabase
+        // Get all stores to count manually by category
+        const { data: storeData, error: storeError } = await supabase
           .from('stores')
-          .select('category, count(*)')
-          .order('category');
+          .select('category');
         
-        if (storeCountError) throw storeCountError;
+        if (storeError) throw storeError;
         
-        // Get counts for featured stores by category
+        // Get featured stores to count manually by category
         const { data: featuredStoreData, error: featuredStoreError } = await supabase
           .from('stores')
-          .select('category, count(*)')
-          .eq('featured', true)
-          .order('category');
+          .select('category')
+          .eq('featured', true);
         
         if (featuredStoreError) throw featuredStoreError;
         
-        // Create mappings of category to store count
+        // Create mappings of category to store count by manually counting
         const storeCountsMap: Record<string, number> = {};
         const featuredStoreCountsMap: Record<string, number> = {};
         
-        // Process store counts by iterating over data and aggregating manually
-        if (storeCountData) {
-          // Group by category and count
-          storeCountData.forEach(item => {
-            const category = item.category;
-            storeCountsMap[category] = (storeCountsMap[category] || 0) + 1;
+        // Count all stores by category
+        if (storeData) {
+          storeData.forEach(item => {
+            if (item.category) {
+              storeCountsMap[item.category] = (storeCountsMap[item.category] || 0) + 1;
+            }
           });
         }
         
-        // Process featured store counts
+        // Count featured stores by category
         if (featuredStoreData) {
-          // Group by category and count
           featuredStoreData.forEach(item => {
-            const category = item.category;
-            featuredStoreCountsMap[category] = (featuredStoreCountsMap[category] || 0) + 1;
+            if (item.category) {
+              featuredStoreCountsMap[item.category] = (featuredStoreCountsMap[item.category] || 0) + 1;
+            }
           });
         }
         
