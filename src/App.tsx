@@ -14,6 +14,7 @@ import AllStores from "./pages/AllStores";
 import AllCategories from "./pages/AllCategories";
 import NotFound from "./pages/NotFound";
 import SignupPage from "./pages/SignupPage";
+import LoginPage from "./pages/LoginPage";
 import * as React from "react";
 
 // Move QueryClient creation inside the component
@@ -36,8 +37,8 @@ const App = () => {
             <Route path="/store/:id" element={<StorePage />} />
             <Route path="/all-stores" element={<AllStores />} />
             <Route path="/all-categories" element={<AllCategories />} />
-            <Route path="/login" element={<NotFound />} /> {/* Placeholder for Login page */}
-            <Route path="/signup" element={<SignupPage />} /> {/* Updated to use SignupPage */}
+            <Route path="/login" element={<LoginPage />} /> {/* Updated to use LoginPage */}
+            <Route path="/signup" element={<SignupPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
