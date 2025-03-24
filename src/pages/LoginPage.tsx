@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,7 +64,8 @@ const LoginPage = () => {
     setLoginAttempts(prev => prev + 1);
     
     try {
-      const { error } = await signIn(values.email, values.password);
+      // Pass the rememberMe option to the signIn function
+      const { error } = await signIn(values.email, values.password, values.rememberMe);
       
       if (error) {
         console.error("Login error:", error);

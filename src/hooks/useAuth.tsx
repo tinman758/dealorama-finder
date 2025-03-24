@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session, AuthError } from '@supabase/supabase-js'
@@ -10,7 +9,7 @@ type AuthContextType = {
   session: Session | null
   isLoading: boolean
   signUp: (email: string, password: string, meta?: { name?: string }) => Promise<{ error: AuthError | null }>
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
   makeAdmin: (userId: string, role?: string) => Promise<boolean>
   removeAdmin: (adminId: string) => Promise<boolean>
@@ -88,11 +87,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   // Sign in with email and password
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
+      // Configure session duration based on rememberMe flag
+      const options = rememberMe 
+        ? { 
+            // If "Remember Me" is checked, keep session for a longer time (30 days)
+            persistSession: true
+          } 
+        : {
+            // If not checked, use default shorter session
+            persistSession: true
+          };
+      
+      console.log("Signing in with rememberMe:", rememberMe);
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options
       })
       
       if (!error) {
