@@ -1,8 +1,10 @@
+
 import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { X } from 'lucide-react'
 
 type AuthContextType = {
   user: User | null
@@ -92,14 +94,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         toast.success('Successfully logged in', {
           description: 'Welcome back to DealFinder!',
           position: 'top-center',
-          duration: 3000,
-          className: 'bg-gradient-to-r from-deal to-deal-dark text-white',
+          duration: 2000, // Reduced from 3000 to 2000 for faster fadeaway
+          className: 'bg-gradient-to-r from-deal to-deal-dark text-white/90', // Lighter text with 90% opacity
           icon: '👋',
           style: {
             border: '1px solid rgba(255, 255, 255, 0.2)',
             borderRadius: '0.75rem',
             boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)'
-          }
+          },
+          closeButton: true, // Enable close button
         });
         navigate('/')
       }
