@@ -52,9 +52,6 @@ const AdminLayout = () => {
           <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <Link to="/" className="text-blue-600 hover:text-blue-800">
-                Back to Site
-              </Link>
             </div>
           </div>
         </header>
