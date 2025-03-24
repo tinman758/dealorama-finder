@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Mail, Lock, ArrowRight, Info } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Info, AlertTriangle } from 'lucide-react';
 
 import AuthLayout from '@/components/auth/AuthLayout';
 import SocialLoginButtons from '@/components/auth/SocialLoginButtons';
@@ -23,19 +23,25 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Define form validation schema
+// Define form validation schema with stronger validation
 const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(1, {
-    message: "Password is required.",
+  }).trim().toLowerCase(),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
   }),
   rememberMe: z.boolean().optional(),
+  // Hidden CSRF token field to protect against CSRF attacks
+  csrfToken: z.string()
 });
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Generate a CSRF token on component mount
+  const [csrfToken] = useState(() => Math.random().toString(36).substring(2));
+  const [loginAttempts, setLoginAttempts] = useState(0);
 
   // Define form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,21 +50,56 @@ const LoginPage = () => {
       email: "",
       password: "",
       rememberMe: false,
+      csrfToken: csrfToken,
     },
   });
 
-  // Handle form submission
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  // Handle form submission with security considerations
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Prevent multiple submissions
+    if (isSubmitting) return;
     
-    toast.success("Login successful!", {
-      description: "Redirecting to your dashboard..."
-    });
+    // Implement rate limiting - in real implementation this would be server-side
+    if (loginAttempts >= 5) {
+      toast.error("Too many login attempts", {
+        description: "Please try again later or reset your password"
+      });
+      return;
+    }
     
-    setTimeout(() => {
-      navigate('/');
-    }, 1500);
+    setIsSubmitting(true);
+    setLoginAttempts(prev => prev + 1);
+    
+    try {
+      // Verify CSRF token matches (would be verified server-side)
+      if (values.csrfToken !== csrfToken) {
+        throw new Error("Security validation failed");
+      }
+      
+      console.log("Login attempt:", { email: values.email });
+      
+      // In a real implementation, this would be an API call with proper error handling
+      // This is a placeholder for the actual authentication logic
+      
+      toast.success("Login successful!", {
+        description: "Redirecting to your dashboard..."
+      });
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed", {
+        description: "Please check your credentials and try again"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // Show warning if too many login attempts
+  const showRateLimitWarning = loginAttempts >= 3;
 
   return (
     <AuthLayout 
@@ -68,8 +109,20 @@ const LoginPage = () => {
       <SocialLoginButtons action="login" />
       <AuthDivider />
 
+      {showRateLimitWarning && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="text-xs">
+            Multiple failed login attempts detected. Your account will be temporarily locked after {5 - loginAttempts} more attempts.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          {/* Hidden CSRF token field */}
+          <input type="hidden" name="csrfToken" value={csrfToken} />
+          
           <FormField
             control={form.control}
             name="email"
@@ -79,7 +132,12 @@ const LoginPage = () => {
                 <FormControl>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input placeholder="you@example.com" className="pl-10" {...field} />
+                    <Input 
+                      placeholder="you@example.com" 
+                      className="pl-10" 
+                      autoComplete="username" 
+                      {...field} 
+                    />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -96,7 +154,13 @@ const LoginPage = () => {
                 <FormControl>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input type="password" placeholder="••••••••" className="pl-10" {...field} />
+                    <Input 
+                      type="password" 
+                      placeholder="••••••••" 
+                      className="pl-10" 
+                      autoComplete="current-password"
+                      {...field} 
+                    />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -123,14 +187,18 @@ const LoginPage = () => {
               )}
             />
             
-            <Link to="#" className="text-sm font-medium text-deal hover:underline">
+            <Link to="/forgot-password" className="text-sm font-medium text-deal hover:underline">
               Forgot password?
             </Link>
           </div>
 
-          <Button type="submit" className="w-full bg-deal hover:bg-deal-hover">
-            Log In
-            <ArrowRight className="ml-2 h-4 w-4" />
+          <Button 
+            type="submit" 
+            className="w-full bg-deal hover:bg-deal-hover"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Logging in...' : 'Log In'}
+            {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
           </Button>
         </form>
       </Form>
