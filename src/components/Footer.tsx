@@ -1,5 +1,6 @@
 
 import { Link } from 'react-router-dom';
+import { Facebook, Instagram, Twitter, Linkedin, Youtube } from 'lucide-react';
 
 const categories = [
   { name: "Fashion", path: "/category/fashion" },
@@ -26,6 +27,14 @@ const aboutLinks = [
   { name: "Contact Us", path: "/contact" },
 ];
 
+const socialLinks = [
+  { icon: Facebook, path: "https://facebook.com", label: "Facebook" },
+  { icon: Instagram, path: "https://instagram.com", label: "Instagram" },
+  { icon: Twitter, path: "https://twitter.com", label: "Twitter" },
+  { icon: Linkedin, path: "https://linkedin.com", label: "LinkedIn" },
+  { icon: Youtube, path: "https://youtube.com", label: "YouTube" },
+];
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   
@@ -42,6 +51,22 @@ const Footer = () => {
               Find the best deals, discounts, and coupons from your favorite stores. 
               Save money on every purchase.
             </p>
+            
+            {/* Social Media Links */}
+            <div className="flex items-center gap-4 mt-6">
+              {socialLinks.map((social) => (
+                <a 
+                  key={social.label}
+                  href={social.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:text-deal transition-colors"
+                  aria-label={social.label}
+                >
+                  <social.icon size={20} />
+                </a>
+              ))}
+            </div>
           </div>
           
           {/* Categories Column */}

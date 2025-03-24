@@ -36,8 +36,8 @@ const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
           align: "start",
         }}
         onSelect={(api) => {
-          // Fix: Properly access the selectedScrollSnap method from the carousel API
-          if (api) {
+          // Update active index when carousel changes
+          if (api && typeof api.selectedScrollSnap === 'function') {
             setActiveIndex(api.selectedScrollSnap());
           }
         }}
