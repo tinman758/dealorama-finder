@@ -20,7 +20,7 @@ export function useStores(options?: {
         
         let query = supabase
           .from('stores')
-          .select('*');
+          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description');
         
         if (options?.featured) {
           query = query.eq('featured', true);
@@ -83,7 +83,7 @@ export function useStore(id: string) {
         
         const { data, error } = await supabase
           .from('stores')
-          .select('*')
+          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description')
           .eq('id', id)
           .single();
         

@@ -15,7 +15,7 @@ export function useCategories() {
         
         const { data, error } = await supabase
           .from('categories')
-          .select('*')
+          .select('id, name, slug, icon')
           .order('name');
         
         if (error) throw error;
@@ -55,7 +55,7 @@ export function useCategory(slug: string) {
         
         const { data, error } = await supabase
           .from('categories')
-          .select('*')
+          .select('id, name, slug, icon')
           .eq('slug', slug)
           .single();
         

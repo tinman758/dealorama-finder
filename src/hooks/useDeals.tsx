@@ -22,7 +22,7 @@ export function useDeals(options?: {
         
         let query = supabase
           .from('deals')
-          .select('*');
+          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image');
         
         if (options?.featured) {
           query = query.eq('featured', true);
@@ -100,7 +100,7 @@ export function useDeal(id: string) {
         
         const { data, error } = await supabase
           .from('deals')
-          .select('*')
+          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image')
           .eq('id', id)
           .single();
         
