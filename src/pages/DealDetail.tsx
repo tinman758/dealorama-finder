@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Copy, Check, ExternalLink, Clock, ArrowLeft } from 'lucide-react';
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
@@ -43,7 +43,10 @@ const DealDetail = () => {
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(true);
-    toast.success("Code copied to clipboard!");
+    toast({
+      title: "Success",
+      description: "Code copied to clipboard!"
+    });
     
     setTimeout(() => {
       setCopied(false);

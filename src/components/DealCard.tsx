@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import { Deal } from '../types';
 import { getStoreById } from '../data/stores';
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 
 interface DealCardProps {
   deal: Deal;
@@ -25,7 +25,10 @@ const DealCard: React.FC<DealCardProps> = ({ deal, featured = false }) => {
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(true);
-    toast.success("Code copied to clipboard!");
+    toast({
+      title: "Success",
+      description: "Code copied to clipboard!",
+    });
     
     setTimeout(() => {
       setCopied(false);
