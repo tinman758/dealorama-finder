@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import DealDetail from "./pages/DealDetail";
 import CategoryPage from "./pages/CategoryPage";
 import SearchResults from "./pages/SearchResults";
+import StorePage from "./pages/StorePage";
 import NotFound from "./pages/NotFound";
 import * as React from "react";
 
@@ -27,6 +28,7 @@ const App = () => {
             <Route path="/deal/:id" element={<DealDetail />} />
             <Route path="/category/:category" element={<CategoryPage />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/store/:id" element={<StorePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
