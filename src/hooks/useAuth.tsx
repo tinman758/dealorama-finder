@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session, AuthError } from '@supabase/supabase-js'
@@ -24,16 +23,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
-  // Get the current origin to use for redirects, ensuring it's not localhost
   const getRedirectURL = () => {
     const currentURL = window.location.origin
-    // For development and testing, you can manually override this if needed
-    // or use the actual deployed URL when in production
     return currentURL
   }
 
   useEffect(() => {
-    // Check active session
     const getSession = async () => {
       setIsLoading(true)
       const { data: { session }, error } = await supabase.auth.getSession()
@@ -48,7 +43,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     getSession()
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
@@ -60,7 +54,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [])
 
-  // Sign up with email and password
   const signUp = async (email: string, password: string, meta?: { name?: string }) => {
     try {
       const redirectTo = `${getRedirectURL()}/auth/callback`
@@ -76,7 +69,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       
       if (!error) {
-        // Redirect to success page instead of showing toast
         navigate('/signup-success')
       }
       
@@ -87,11 +79,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  // Sign in with email and password - fixed rememberMe parameter by removing options
   const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
-      // Note: We don't need to specify persistSession as it's already set in the client configuration
-      // We're just keeping track of the rememberMe flag for UI purposes
       console.log("Signing in with rememberMe:", rememberMe);
       
       const { error } = await supabase.auth.signInWithPassword({
@@ -100,9 +89,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       
       if (!error) {
-        toast.success('Login successful!', {
-          description: 'Redirecting to your dashboard...'
-        })
+        toast.success('Successfully logged in', {
+          description: 'Welcome back to DealFinder!',
+          position: 'top-center',
+          duration: 3000,
+          className: 'bg-gradient-to-r from-deal to-deal-dark text-white',
+          icon: '👋',
+          style: {
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '0.75rem',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)'
+          }
+        });
         navigate('/')
       }
       
@@ -113,13 +111,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  // Sign out
   const signOut = async () => {
     await supabase.auth.signOut()
     navigate('/login')
   }
-  
-  // Make a user an admin
+
   const makeAdmin = async (userId: string, role: string = 'editor') => {
     try {
       if (!user) {
@@ -148,8 +144,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false
     }
   }
-  
-  // Remove admin privileges
+
   const removeAdmin = async (adminId: string) => {
     try {
       if (!user) {
