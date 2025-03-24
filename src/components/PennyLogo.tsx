@@ -16,8 +16,24 @@ const PennyLogo: React.FC<PennyLogoProps> = ({ size = 'md', className = '' }) =>
     xxl: 'h-16'
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    // Only navigate to home if not already on home page
+    if (window.location.pathname !== '/') {
+      window.location.href = '/';
+    }
+  };
+
   return (
-    <Link to="/" className={`flex items-center focus-ring rounded-md ${className}`}>
+    <Link 
+      to="/" 
+      className={`flex items-center focus-ring rounded-md ${className}`}
+      onClick={handleClick}
+    >
       <img 
         src="/lovable-uploads/6087497a-9952-44a6-a323-e9cb8bbaa18c.png"
         alt="Penny Pinch"
