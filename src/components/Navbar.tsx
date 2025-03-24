@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Menu, X, User, LogOut, Heart, Settings, Key } from 'lucide-react';
+import { Search, Menu, X, User, LogOut, Heart, Settings, Key, LayoutDashboard } from 'lucide-react';
 import SearchBar from './SearchBar';
 import { Button } from '@/components/ui/button';
 import PennyLogo from './PennyLogo';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -31,6 +32,7 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminCheck();
 
   // Get user initials for avatar fallback
   const getUserInitials = () => {
@@ -107,6 +109,17 @@ const Navbar = () => {
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer flex items-center text-penny-blue">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500 focus:text-red-500">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -209,6 +222,16 @@ const Navbar = () => {
                     <Settings className="h-4 w-4" />
                     Settings
                   </Link>
+                  {isAdmin && (
+                    <Link 
+                      to="/admin"
+                      className="text-base font-medium text-penny-blue hover:text-penny-blue flex items-center gap-2 py-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button 
                     onClick={() => {
                       handleSignOut();

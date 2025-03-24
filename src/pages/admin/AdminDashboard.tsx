@@ -20,12 +20,16 @@ const AdminDashboard = () => {
         // For now, we'll use mock data since these tables don't exist in Supabase yet
         // In a real implementation, you would query these tables
         
-        // Count users (only count admin users as a proxy)
-        const { count: adminCount } = await supabase
+        // Count admin users
+        const { count: adminCount, error: adminError } = await supabase
           .from('admin_users')
           .select('*', { count: 'exact', head: true });
+          
+        if (adminError) {
+          console.error('Error fetching admin count:', adminError);
+        }
 
-        // For the rest, use mock data
+        // For the rest, use mock data since tables don't exist yet
         setCounts({
           users: adminCount || 0,
           deals: 5,

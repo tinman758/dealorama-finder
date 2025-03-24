@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session, AuthError } from '@supabase/supabase-js'
@@ -86,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  // Sign in with email and password
+  // Sign in with email and password - fixed rememberMe parameter by removing options
   const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
       // Note: We don't need to specify persistSession as it's already set in the client configuration
@@ -95,7 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       })
       
       if (!error) {

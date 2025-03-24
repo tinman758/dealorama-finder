@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +10,18 @@ import { Loader2 } from 'lucide-react';
 const AdminLayout = () => {
   const { user, isLoading } = useAuth();
   const { isAdmin, isAdminLoading } = useAdminCheck();
+  const navigate = useNavigate();
+
+  // This useEffect ensures we redirect when we have the data
+  useEffect(() => {
+    if (!isLoading && !isAdminLoading) {
+      if (!user) {
+        navigate('/login');
+      } else if (!isAdmin) {
+        navigate('/');
+      }
+    }
+  }, [user, isAdmin, isLoading, isAdminLoading, navigate]);
 
   if (isLoading || isAdminLoading) {
     return (
@@ -20,12 +32,14 @@ const AdminLayout = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (!isAdmin) {
-    return <Navigate to="/" replace />;
+  // Don't redirect here, let the useEffect handle it to avoid race conditions
+  if (!user || !isAdmin) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Checking permissions...</span>
+      </div>
+    );
   }
 
   return (

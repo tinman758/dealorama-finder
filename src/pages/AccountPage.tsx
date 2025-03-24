@@ -1,13 +1,8 @@
 
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { 
   Card, 
   CardContent, 
@@ -17,13 +12,13 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { User, Heart, Settings, Key } from 'lucide-react';
+import { User, Heart, Settings, Key, LayoutDashboard } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 const AccountPage = () => {
   const { user, isLoading } = useAuth();
+  const { isAdmin } = useAdminCheck();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -106,6 +101,15 @@ const AccountPage = () => {
                       Settings
                     </Link>
                   </Button>
+                  
+                  {isAdmin && (
+                    <Button variant="ghost" className="justify-start text-penny-blue" asChild>
+                      <Link to="/admin" className="flex items-center">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </Button>
+                  )}
                 </nav>
               </CardContent>
             </Card>
