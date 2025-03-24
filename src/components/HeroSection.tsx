@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, Headphones, Car, Plane } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from './ui/button';
+import { useCategories } from '@/hooks/useCategories';
+import { Loader2 } from 'lucide-react';
 
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+  const { categories, loading } = useCategories();
 
   // Sanitize input to prevent XSS
   const sanitizeInput = (input: string): string => {
@@ -40,14 +43,8 @@ const HeroSection = () => {
     }
   };
 
-  // Define category links with security considerations
-  const categoryLinks = [
-    { name: 'Fashion', icon: ShoppingBag, path: '/category/fashion', bgColor: 'bg-[#FEF7CD]' },
-    { name: 'Electronics', icon: Headphones, path: '/category/electronics', bgColor: 'bg-[#D3E4FD]' },
-    { name: 'Food', icon: Search, path: '/category/food', bgColor: 'bg-[#F2FCE2]' },
-    { name: 'Travel', icon: Plane, path: '/category/travel', bgColor: 'bg-[#FFDEE2]' },
-    { name: 'Automotive', icon: Car, path: '/category/automotive', bgColor: 'bg-[#E5DEFF]' },
-  ];
+  // Get the first 5 categories for the popular section
+  const popularCategories = categories.slice(0, 5);
 
   return (
     <section className="relative overflow-hidden pb-16 pt-12 sm:pb-20 sm:pt-16 lg:pb-28 lg:pt-20">
@@ -100,20 +97,20 @@ const HeroSection = () => {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <span className="text-sm text-gray-600 flex items-center mt-0.5 mr-1">Popular:</span>
           
-          {categoryLinks.map((category, index) => {
-            const Icon = category.icon;
-            return (
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+          ) : (
+            popularCategories.map((category) => (
               <button 
-                key={index}
-                onClick={() => navigate(category.path)} 
-                className={`flex items-center gap-1.5 ${category.bgColor} px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover`}
+                key={category.id}
+                onClick={() => navigate(`/category/${category.slug}`)} 
+                className={`flex items-center gap-1.5 bg-[${category.icon ? category.icon : '#F2FCE2'}] px-4 py-1.5 rounded-full text-gray-700 text-sm font-medium hover:shadow-md transition-all duration-200 animate-hover`}
                 aria-label={`${category.name} category`}
               >
-                <Icon className="h-3.5 w-3.5" />
                 <span>{category.name}</span>
               </button>
-            );
-          })}
+            ))
+          )}
         </div>
       </div>
     </section>

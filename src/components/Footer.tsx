@@ -2,23 +2,8 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Linkedin, Youtube } from 'lucide-react';
 import PennyLogo from './PennyLogo';
-
-const categories = [
-  { name: "Fashion", path: "/category/fashion" },
-  { name: "Electronics", path: "/category/electronics" },
-  { name: "Beauty", path: "/category/beauty" },
-  { name: "Home", path: "/category/home" },
-  { name: "Travel", path: "/category/travel" },
-  { name: "Food", path: "/category/food" },
-];
-
-const popularStores = [
-  { name: "Amazon", path: "/store/1" },
-  { name: "Nike", path: "/store/2" },
-  { name: "Apple", path: "/store/3" },
-  { name: "Expedia", path: "/store/4" },
-  { name: "Sephora", path: "/store/6" },
-];
+import { useCategories } from '@/hooks/useCategories';
+import { useStores } from '@/hooks/useStores';
 
 const aboutLinks = [
   { name: "About Us", path: "/about" },
@@ -38,6 +23,11 @@ const socialLinks = [
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { categories } = useCategories();
+  const { stores } = useStores({ featured: true, limit: 5 });
+  
+  // Get up to 6 categories for the footer
+  const footerCategories = categories.slice(0, 6);
   
   return (
     <footer className="bg-gray-50 border-t border-gray-200/70 pt-12 pb-6">
@@ -72,10 +62,10 @@ const Footer = () => {
           <div>
             <h3 className="font-medium text-gray-900 mb-4">Categories</h3>
             <ul className="space-y-2.5">
-              {categories.map((category) => (
-                <li key={category.path}>
+              {footerCategories.map((category) => (
+                <li key={category.id}>
                   <Link 
-                    to={category.path}
+                    to={`/category/${category.slug}`}
                     className="text-sm text-gray-600 hover:text-penny-blue transition-colors duration-200"
                   >
                     {category.name}
@@ -97,10 +87,10 @@ const Footer = () => {
           <div>
             <h3 className="font-medium text-gray-900 mb-4">Popular Stores</h3>
             <ul className="space-y-2.5">
-              {popularStores.map((store) => (
-                <li key={store.path}>
+              {stores.map((store) => (
+                <li key={store.id}>
                   <Link 
-                    to={store.path}
+                    to={`/store/${store.id}`}
                     className="text-sm text-gray-600 hover:text-penny-blue transition-colors duration-200"
                   >
                     {store.name}

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Menu, X, User, LogOut, Heart, Settings, Key, LayoutDashboard } from 'lucide-react';
@@ -8,6 +7,7 @@ import PennyLogo from './PennyLogo';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
+import { useCategories } from '@/hooks/useCategories';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -18,21 +18,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-const categories = [
-  { name: "Fashion", path: "/category/fashion" },
-  { name: "Electronics", path: "/category/electronics" },
-  { name: "Beauty", path: "/category/beauty" },
-  { name: "Home", path: "/category/home" },
-  { name: "Travel", path: "/category/travel" },
-  { name: "Food", path: "/category/food" },
-];
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
+  const { categories } = useCategories();
+
+  // Get the first 6 categories for the navbar
+  const navbarCategories = categories.slice(0, 6);
 
   // Get user initials for avatar fallback
   const getUserInitials = () => {
@@ -52,10 +47,10 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          {categories.map((category) => (
+          {navbarCategories.map((category) => (
             <Link
-              key={category.path}
-              to={category.path}
+              key={category.id}
+              to={`/category/${category.slug}`}
               className="text-sm font-medium text-gray-700 hover:text-penny-blue transition-colors duration-200 focus-ring rounded-md px-2 py-1"
             >
               {category.name}
@@ -172,10 +167,10 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden container-fluid py-4 bg-blur-light animate-slide-down border-b border-gray-200/50">
           <nav className="flex flex-col space-y-3">
-            {categories.map((category) => (
+            {navbarCategories.map((category) => (
               <Link
-                key={category.path}
-                to={category.path}
+                key={category.id}
+                to={`/category/${category.slug}`}
                 className="text-base font-medium text-gray-700 hover:text-penny-blue transition-colors duration-200 py-1"
                 onClick={() => setIsMenuOpen(false)}
               >
