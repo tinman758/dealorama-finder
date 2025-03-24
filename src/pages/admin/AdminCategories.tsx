@@ -71,7 +71,7 @@ const AdminCategories = () => {
       };
 
       if (editingCategory) {
-        // Update existing category
+        // Update existing category - Use specific column targeting to avoid ambiguous column references
         const { error } = await supabase
           .from('categories')
           .update(categoryData)
@@ -80,7 +80,7 @@ const AdminCategories = () => {
         if (error) throw error;
         toast.success('Category updated successfully');
       } else {
-        // Add new category
+        // Add new category - Use specific column values to avoid ambiguous column references
         const { error } = await supabase
           .from('categories')
           .insert([{ 
