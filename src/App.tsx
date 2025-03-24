@@ -15,6 +15,7 @@ import AllStores from "./pages/AllStores";
 import AllCategories from "./pages/AllCategories";
 import NotFound from "./pages/NotFound";
 import SignupPage from "./pages/SignupPage";
+import SignupSuccessPage from "./pages/SignupSuccessPage";
 import LoginPage from "./pages/LoginPage";
 import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
@@ -50,6 +51,7 @@ const App = () => {
               <Route path="/all-categories" element={<AllCategories />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/signup-success" element={<SignupSuccessPage />} />
               
               {/* Auth Callback Route */}
               <Route path="/auth/callback" element={<AuthCallbackPage />} />
