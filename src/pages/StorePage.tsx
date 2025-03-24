@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Globe, MapPin, Info } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
@@ -101,7 +101,7 @@ const StorePage = () => {
           </nav>
           
           {/* Store Header */}
-          <div className="mb-10 flex items-center">
+          <div className="mb-8 flex items-center">
             <div className="bg-white p-6 rounded-lg shadow-soft mr-6">
               <img 
                 src={store.logo} 
@@ -114,6 +114,55 @@ const StorePage = () => {
               <p className="text-gray-600">
                 {store.dealCount} active deals and coupons
               </p>
+            </div>
+          </div>
+
+          {/* Store Info Section */}
+          <div className="bg-white rounded-lg shadow-soft p-6 mb-10">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <Info className="mr-2 h-5 w-5 text-deal" />
+              About {store.name}
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-gray-700 mb-4">{store.description}</p>
+                
+                <div className="flex items-center mb-3">
+                  {store.storeType === 'online' ? (
+                    <Globe className="h-5 w-5 text-deal mr-2" />
+                  ) : store.storeType === 'local' ? (
+                    <MapPin className="h-5 w-5 text-deal mr-2" />
+                  ) : (
+                    <div className="flex items-center">
+                      <Globe className="h-5 w-5 text-deal mr-1" />
+                      <span className="mx-1">/</span>
+                      <MapPin className="h-5 w-5 text-deal ml-1 mr-2" />
+                    </div>
+                  )}
+                  <span className="text-gray-700">
+                    {store.storeType === 'online' ? 'Online Store' : 
+                     store.storeType === 'local' ? 'Local Store' : 
+                     'Online & Local Store'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center">
+                  <MapPin className="h-5 w-5 text-deal mr-2" />
+                  <span className="text-gray-700">Country: {store.country}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center md:justify-end">
+                <a 
+                  href={store.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="deal-button"
+                >
+                  Visit Store
+                </a>
+              </div>
             </div>
           </div>
           

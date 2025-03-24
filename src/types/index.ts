@@ -27,6 +27,9 @@ export interface Store {
   featured?: boolean;
   dealCount: number;
   url: string;
+  storeType?: 'online' | 'local' | 'both';  // Whether the store is online, local, or both
+  country?: string;         // Country where the store operates
+  description?: string;     // Brief description of the store
 }
 
 export interface Category {
