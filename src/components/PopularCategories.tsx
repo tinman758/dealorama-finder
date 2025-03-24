@@ -53,7 +53,7 @@ const PopularCategories = () => {
       <div className="container-fluid">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Popular Categories</h2>
-          <Link to="/categories" className="text-deal font-medium hover:underline">
+          <Link to="/all-categories" className="text-deal font-medium hover:underline">
             View all categories
           </Link>
         </div>

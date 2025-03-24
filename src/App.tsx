@@ -9,6 +9,8 @@ import DealDetail from "./pages/DealDetail";
 import CategoryPage from "./pages/CategoryPage";
 import SearchResults from "./pages/SearchResults";
 import StorePage from "./pages/StorePage";
+import AllStores from "./pages/AllStores";
+import AllCategories from "./pages/AllCategories";
 import NotFound from "./pages/NotFound";
 import * as React from "react";
 
@@ -29,6 +31,8 @@ const App = () => {
             <Route path="/category/:category" element={<CategoryPage />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/store/:id" element={<StorePage />} />
+            <Route path="/all-stores" element={<AllStores />} />
+            <Route path="/all-categories" element={<AllCategories />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -58,6 +58,14 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link 
+                  to="/all-categories"
+                  className="text-sm text-deal font-medium hover:underline transition-colors duration-200"
+                >
+                  View all categories
+                </Link>
+              </li>
             </ul>
           </div>
           
@@ -77,7 +85,7 @@ const Footer = () => {
               ))}
               <li>
                 <Link 
-                  to="/stores"
+                  to="/all-stores"
                   className="text-sm text-deal font-medium hover:underline transition-colors duration-200"
                 >
                   View all stores
