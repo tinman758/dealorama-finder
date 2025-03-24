@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Search, Menu, X, User, LogOut, Heart, Settings, Key, LayoutDashboard } from 'lucide-react';
 import SearchBar from './SearchBar';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,10 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminCheck();
   const { categories } = useCategories();
+  const location = useLocation();
+  
+  // Check if we're in the admin section by checking if the path starts with '/admin'
+  const isAdminSection = location.pathname.startsWith('/admin');
 
   // Get the first 6 categories for the navbar
   const navbarCategories = categories.slice(0, 6);
@@ -134,13 +139,16 @@ const Navbar = () => {
             </div>
           )}
           
-          <button 
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus-ring"
-            aria-label="Search"
-          >
-            <Search className="h-5 w-5 text-gray-700" />
-          </button>
+          {/* Only show search icon if not in admin section */}
+          {!isAdminSection && (
+            <button 
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus-ring"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5 text-gray-700" />
+            </button>
+          )}
           
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -156,8 +164,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Search Dropdown */}
-      {isSearchOpen && (
+      {/* Search Dropdown - Only show if not in admin section */}
+      {isSearchOpen && !isAdminSection && (
         <div className="container-fluid py-3 bg-blur-light animate-slide-down border-b border-gray-200/50">
           <SearchBar onClose={() => setIsSearchOpen(false)} />
         </div>
