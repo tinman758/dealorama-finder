@@ -43,7 +43,7 @@ const HeroSection = () => {
             </div>
             <input
               type="text"
-              placeholder="Search for deals, coupons, and stores..."
+              placeholder="Search deals..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-grow py-4 px-12 focus:outline-none text-gray-700 text-lg"
@@ -51,7 +51,7 @@ const HeroSection = () => {
             />
             <button
               type="submit"
-              className="bg-deal text-white font-medium px-4 sm:px-6 transition-colors duration-200 hover:bg-deal-hover focus:outline-none focus:ring-2 focus:ring-deal/50 focus:ring-offset-2 text-base sm:text-lg whitespace-nowrap"
+              className="bg-deal text-white font-medium px-3 sm:px-6 py-2 transition-colors duration-200 hover:bg-deal-hover focus:outline-none focus:ring-2 focus:ring-deal/50 focus:ring-offset-2 text-sm sm:text-lg whitespace-nowrap"
             >
               Search
             </button>

@@ -54,7 +54,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search for deals, stores, and coupons..."
+            placeholder={isMobile ? "Search..." : "Search for deals, stores, and coupons..."}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setIsFocused(true)}
