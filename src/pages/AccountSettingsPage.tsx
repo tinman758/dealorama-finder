@@ -12,6 +12,9 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 type ProfileFormValues = {
   name: string;
@@ -27,6 +30,9 @@ type EmailPreferencesValues = {
 const AccountSettingsPage = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [updatingEmail, setUpdatingEmail] = useState(false);
   
   const { register, handleSubmit, setValue, formState: { errors, isDirty, isSubmitting } } = useForm<ProfileFormValues>();
   
@@ -46,21 +52,113 @@ const AccountSettingsPage = () => {
     if (user) {
       setValue('name', user.user_metadata?.name || '');
       setValue('email', user.email || '');
+      
+      // Fetch avatar URL if it exists
+      if (user.user_metadata?.avatar_url) {
+        setAvatarUrl(user.user_metadata.avatar_url);
+      }
     }
   }, [user, isLoading, navigate, setValue]);
 
   const onSubmit = async (data: ProfileFormValues) => {
-    toast.info("This feature is not yet implemented");
-    // In a real app, you would update the user profile here
-    // const { error } = await supabase.auth.updateUser({
-    //   data: { name: data.name }
-    // });
+    // Update user profile
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { name: data.name }
+      });
+      
+      if (error) {
+        toast.error("Failed to update profile", {
+          description: error.message
+        });
+      } else {
+        toast.success("Profile updated successfully");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const updateEmail = async (newEmail: string) => {
+    if (!newEmail || newEmail === user?.email) return;
     
-    // if (error) {
-    //   toast.error("Failed to update profile");
-    // } else {
-    //   toast.success("Profile updated successfully");
-    // }
+    setUpdatingEmail(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      
+      if (error) {
+        toast.error("Failed to update email", {
+          description: error.message
+        });
+      } else {
+        toast.success("Verification email sent", {
+          description: "Please check your new email address for a verification link to complete the change."
+        });
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+      console.error("Error updating email:", error);
+    } finally {
+      setUpdatingEmail(false);
+    }
+  };
+  
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${user!.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    
+    setUploadingAvatar(true);
+    
+    try {
+      // Check if the user already has an avatar to delete the old one
+      if (user?.user_metadata?.avatar_path) {
+        await supabase.storage
+          .from('avatars')
+          .remove([user.user_metadata.avatar_path]);
+      }
+      
+      // Upload the new avatar
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+        
+      if (uploadError) {
+        throw uploadError;
+      }
+      
+      // Get the public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+      
+      // Update the user's metadata with the avatar URL
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { 
+          avatar_url: publicUrlData.publicUrl,
+          avatar_path: filePath
+        }
+      });
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
+      setAvatarUrl(publicUrlData.publicUrl);
+      toast.success("Profile picture updated successfully");
+      
+    } catch (error: any) {
+      toast.error("Failed to upload profile picture", {
+        description: error.message
+      });
+      console.error("Error uploading avatar:", error);
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const onEmailPreferencesSubmit = async (data: EmailPreferencesValues) => {
@@ -106,6 +204,39 @@ const AccountSettingsPage = () => {
         
         <Card className="mb-8">
           <CardHeader>
+            <CardTitle>Profile Picture</CardTitle>
+            <CardDescription>
+              Upload a profile picture for your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row items-center gap-6">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={avatarUrl || ''} alt="Profile picture" />
+              <AvatarFallback className="text-lg">
+                {user.user_metadata?.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex flex-col gap-4 w-full sm:w-auto">
+              <div>
+                <Label htmlFor="avatar-upload" className="block mb-2">Upload new picture</Label>
+                <Input 
+                  id="avatar-upload" 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  disabled={uploadingAvatar}
+                />
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Recommended: Square image, at least 200x200 pixels
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="mb-8">
+          <CardHeader>
             <CardTitle>Profile Settings</CardTitle>
             <CardDescription>
               Update your account profile information
@@ -127,21 +258,39 @@ const AccountSettingsPage = () => {
               
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register('email')}
-                  disabled
-                  placeholder="Your email"
-                  className="truncate max-w-full"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="email"
+                    type="email"
+                    {...register('email', { 
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Invalid email address"
+                      }
+                    })}
+                    placeholder="Your email"
+                    className="truncate max-w-full"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    disabled={updatingEmail || !isDirty}
+                    onClick={() => updateEmail((register('email').value as string))}
+                  >
+                    {updatingEmail ? "Updating..." : "Change Email"}
+                  </Button>
+                </div>
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  Email cannot be changed. This is your login address.
+                  Changing your email requires verification from your new address
                 </p>
               </div>
               
               <Button type="submit" disabled={!isDirty || isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Changes"}
+                {isSubmitting ? "Saving..." : "Save Profile Changes"}
               </Button>
             </form>
           </CardContent>
