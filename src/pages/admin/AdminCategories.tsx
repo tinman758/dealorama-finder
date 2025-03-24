@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,6 @@ import { useCategories } from '@/hooks/useCategories';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/useAuth';
 
 const AdminCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +17,6 @@ const AdminCategories = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const { categories, loading, error } = useCategories();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useAuth();
   
   const [formData, setFormData] = useState<Partial<Category>>({
     name: '',
@@ -71,20 +69,28 @@ const AdminCategories = () => {
       };
 
       if (editingCategory) {
-        // Update existing category - Use specific column targeting to avoid ambiguous column references
+        // Update existing category - explicitly specify columns to avoid ambiguity
         const { error } = await supabase
           .from('categories')
-          .update(categoryData)
+          .update({
+            name: categoryData.name,
+            slug: categoryData.slug,
+            icon: categoryData.icon,
+            updated_at: categoryData.updated_at
+          })
           .eq('id', editingCategory.id);
 
         if (error) throw error;
         toast.success('Category updated successfully');
       } else {
-        // Add new category - Use specific column values to avoid ambiguous column references
+        // Add new category - explicitly specify all column values
         const { error } = await supabase
           .from('categories')
           .insert([{ 
-            ...categoryData, 
+            name: categoryData.name,
+            slug: categoryData.slug,
+            icon: categoryData.icon,
+            updated_at: categoryData.updated_at,
             created_at: new Date().toISOString()
           }]);
 
@@ -107,6 +113,7 @@ const AdminCategories = () => {
     if (!confirm('Are you sure you want to delete this category?')) return;
     
     try {
+      // Explicitly specify which table and column to avoid ambiguity
       const { error } = await supabase
         .from('categories')
         .delete()

@@ -1,10 +1,8 @@
-
 import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { X } from 'lucide-react'
 
 type AuthContextType = {
   user: User | null
@@ -94,15 +92,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         toast.success('Successfully logged in', {
           description: 'Welcome back to DealFinder!',
           position: 'top-center',
-          duration: 2000, // Reduced for faster fadeaway
-          className: 'bg-white text-deal-dark shadow-md', // Light background with dark blue text
+          duration: 2000,
+          className: 'bg-white text-deal-dark shadow-md',
           icon: '👋',
           style: {
             border: '1px solid rgba(23, 105, 232, 0.2)',
             borderRadius: '0.75rem',
             boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)'
           },
-          closeButton: false, // Remove the close button
+          closeButton: false
         });
         navigate('/')
       }
@@ -118,11 +116,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       console.log("Attempting to sign out...")
       
-      // Clear local state first
       setUser(null)
       setSession(null)
       
-      // Call Supabase signOut
       const { error } = await supabase.auth.signOut()
       
       if (error) {
@@ -136,7 +132,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Sign out successful")
       toast.success("Successfully signed out")
       
-      // Navigate to login page after successful sign out
       navigate('/login', { replace: true })
     } catch (err) {
       console.error("Unexpected error during sign out:", err)
@@ -155,7 +150,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .from('admin_users')
         .insert({
           user_id: userId,
-          role: role
+          role: role,
+          created_at: new Date().toISOString()
         })
         
       if (error) {

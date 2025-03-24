@@ -20,7 +20,7 @@ export const useAdminCheck = () => {
       }
 
       try {
-        // First check from user_profiles if they're an admin
+        // Use explicit column selection to avoid ambiguity
         const { data: profileData, error: profileError } = await supabase
           .from('user_profiles')
           .select('is_admin')
@@ -42,7 +42,7 @@ export const useAdminCheck = () => {
           return;
         }
 
-        // If they are an admin, get their role
+        // If they are an admin, get their role with explicit column selection
         const { data: adminData, error: adminError } = await supabase
           .from('admin_users')
           .select('role')

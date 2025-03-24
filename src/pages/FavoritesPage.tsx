@@ -32,7 +32,7 @@ const FavoritesPage = () => {
       try {
         setIsLoadingFavorites(true);
         
-        // First get favorite deal IDs
+        // First get favorite deal IDs - explicitly specify user_id column to avoid ambiguity
         const { data: favoriteData, error: favoriteError } = await supabase
           .from('favorites')
           .select('deal_id')
@@ -93,7 +93,7 @@ const FavoritesPage = () => {
     if (user) {
       fetchFavorites();
       
-      // Set up realtime subscription for favorites
+      // Set up realtime subscription for favorites - explicitly specify favorites table
       const channel = supabase
         .channel('favorites-changes')
         .on(

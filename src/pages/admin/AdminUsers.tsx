@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,15 +43,14 @@ const AdminUsers = () => {
     try {
       const { data: userData, error: userError } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select('id, email, name, created_at, last_sign_in_at, is_admin')
         .order('created_at', { ascending: false });
         
       if (userError) throw userError;
       
-      // Get admin data
       const { data: adminData, error: adminError } = await supabase
         .from('admin_users')
-        .select('*');
+        .select('id, user_id, role, created_at');
         
       if (adminError) throw adminError;
       
@@ -105,7 +103,6 @@ const AdminUsers = () => {
     return adminUsers.find(admin => admin.user_id === userId);
   };
 
-  // New function to add an admin user directly
   const addAdminUser = async () => {
     if (!selectedUserId) {
       toast.error('Please select a user');
@@ -117,7 +114,8 @@ const AdminUsers = () => {
         .from('admin_users')
         .insert({
           user_id: selectedUserId,
-          role: adminRole
+          role: adminRole,
+          created_at: new Date().toISOString()
         });
 
       if (error) throw error;
@@ -287,7 +285,7 @@ const AdminUsers = () => {
                                 size="sm"
                                 className="text-red-500 hover:text-red-700"
                                 onClick={() => handleRemoveAdmin(adminInfo.id, user.id)}
-                                disabled={isCurrentUser} // Prevent removing admin from themselves
+                                disabled={isCurrentUser}
                               >
                                 <ShieldX className="w-4 h-4 mr-1" />
                                 Remove Admin
