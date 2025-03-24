@@ -191,7 +191,6 @@ const AdminCategories = () => {
                     value={formData.slug}
                     onChange={handleInputChange}
                     placeholder="category-slug"
-                    help="URL-friendly version of the name"
                   />
                   <p className="text-sm text-gray-500">Used in URLs, auto-generated from name</p>
                 </div>
