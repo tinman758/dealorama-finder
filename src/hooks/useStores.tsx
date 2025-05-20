@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Store } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
+import { stores as staticStores } from '@/data/staticData';
 
 export function useStores(options?: { 
   featured?: boolean, 
@@ -19,50 +19,39 @@ export function useStores(options?: {
       try {
         setLoading(true);
         
-        let query = supabase
-          .from('stores')
-          .select('id, name, logo, category, category_id, featured, deal_count, url, store_type, country, description');
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        let filteredStores = [...staticStores];
         
         if (options?.featured) {
-          query = query.eq('featured', true);
+          filteredStores = filteredStores.filter(store => store.featured);
         }
         
         if (options?.categoryId) {
-          // Use the new category_id field if provided
-          query = query.eq('category_id', options.categoryId);
+          filteredStores = filteredStores.filter(store => store.categoryId === options.categoryId);
         } else if (options?.category) {
-          // Fallback to using the category name for backward compatibility
-          query = query.eq('category', options.category);
+          filteredStores = filteredStores.filter(store => 
+            store.category.toLowerCase() === options.category?.toLowerCase()
+          );
         }
         
         if (options?.search) {
-          query = query.ilike('name', `%${options.search}%`);
+          const searchLower = options.search.toLowerCase();
+          filteredStores = filteredStores.filter(store => 
+            store.name.toLowerCase().includes(searchLower) || 
+            (store.description && store.description.toLowerCase().includes(searchLower))
+          );
         }
+        
+        // Sort alphabetically by name
+        filteredStores.sort((a, b) => a.name.localeCompare(b.name));
         
         if (options?.limit) {
-          query = query.limit(options.limit);
+          filteredStores = filteredStores.slice(0, options.limit);
         }
         
-        const { data, error } = await query.order('name');
-        
-        if (error) throw error;
-
-        // Map the database columns to our interface properties
-        const mappedStores = (data || []).map(store => ({
-          id: store.id,
-          name: store.name,
-          logo: store.logo,
-          category: store.category,
-          categoryId: store.category_id, // Add the new field
-          featured: store.featured || false,
-          dealCount: store.deal_count || 0,
-          url: store.url,
-          storeType: store.store_type as 'online' | 'local' | 'both' || 'online',
-          country: store.country || undefined,
-          description: store.description || undefined
-        }));
-        
-        setStores(mappedStores);
+        setStores(filteredStores);
       } catch (err: any) {
         console.error('Error fetching stores:', err);
         setError('Failed to load stores');
@@ -87,31 +76,15 @@ export function useStore(id: string) {
       try {
         setLoading(true);
         
-        const { data, error } = await supabase
-          .from('stores')
-          .select('id, name, logo, category, category_id, featured, deal_count, url, store_type, country, description')
-          .eq('id', id)
-          .single();
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        if (error) throw error;
+        const foundStore = staticStores.find(store => store.id === id);
         
-        // Map the database columns to our interface properties
-        if (data) {
-          const mappedStore: Store = {
-            id: data.id,
-            name: data.name,
-            logo: data.logo,
-            category: data.category,
-            categoryId: data.category_id, // Add the new field
-            featured: data.featured || false,
-            dealCount: data.deal_count || 0,
-            url: data.url,
-            storeType: data.store_type as 'online' | 'local' | 'both' || 'online',
-            country: data.country || undefined,
-            description: data.description || undefined
-          };
-          
-          setStore(mappedStore);
+        if (foundStore) {
+          setStore(foundStore);
+        } else {
+          setError('Store not found');
         }
       } catch (err: any) {
         console.error('Error fetching store:', err);

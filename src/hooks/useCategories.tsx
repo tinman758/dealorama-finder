@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Category } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
+import { categories as staticCategories } from '@/data/staticData';
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -12,22 +12,10 @@ export function useCategories() {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
-        .from('categories')
-        .select('id, name, slug, icon')
-        .order('name');
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      if (error) throw error;
-      
-      // Map to ensure we're properly formatting our category objects
-      const formattedCategories: Category[] = (data || []).map(item => ({
-        id: item.id,
-        name: item.name,
-        slug: item.slug,
-        icon: item.icon || undefined
-      }));
-      
-      setCategories(formattedCategories);
+      setCategories(staticCategories);
     } catch (err: any) {
       console.error('Error fetching categories:', err);
       setError('Failed to load categories');
@@ -58,23 +46,15 @@ export function useCategory(slug: string) {
       try {
         setLoading(true);
         
-        const { data, error } = await supabase
-          .from('categories')
-          .select('id, name, slug, icon')
-          .eq('slug', slug)
-          .single();
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        if (error) throw error;
+        const foundCategory = staticCategories.find(cat => cat.slug === slug);
         
-        // Format the category correctly
-        if (data) {
-          const formattedCategory: Category = {
-            id: data.id,
-            name: data.name,
-            slug: data.slug,
-            icon: data.icon || undefined
-          };
-          setCategory(formattedCategory);
+        if (foundCategory) {
+          setCategory(foundCategory);
+        } else {
+          setError('Category not found');
         }
       } catch (err: any) {
         console.error('Error fetching category:', err);

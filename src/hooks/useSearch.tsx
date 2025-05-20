@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Deal, Store } from '@/types';
+import { deals as staticDeals, stores as staticStores } from '@/data/staticData';
 
 export function useSearchDeals(query: string) {
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -19,36 +19,16 @@ export function useSearchDeals(query: string) {
       try {
         setLoading(true);
         
-        const { data, error } = await supabase
-          .from('deals')
-          .select('id, title, description, code, discount, expiry_date, store_id, verified, featured, url, image, category, used_count, type, price, original_price, product_image')
-          .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-          .order('created_at', { ascending: false });
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        if (error) throw error;
+        const queryLower = query.toLowerCase();
+        const matchedDeals = staticDeals.filter(deal => 
+          deal.title.toLowerCase().includes(queryLower) || 
+          deal.description.toLowerCase().includes(queryLower)
+        );
         
-        // Map the database columns to our interface properties
-        const mappedDeals = (data || []).map(deal => ({
-          id: deal.id,
-          title: deal.title,
-          description: deal.description,
-          code: deal.code || undefined,
-          discount: deal.discount,
-          expiryDate: deal.expiry_date || undefined,
-          storeId: deal.store_id,
-          verified: deal.verified || false,
-          featured: deal.featured || false,
-          url: deal.url,
-          image: deal.image || undefined,
-          category: deal.category,
-          usedCount: deal.used_count || 0,
-          type: deal.type as 'code' | 'link' | 'product' || 'code',
-          price: deal.price || undefined,
-          originalPrice: deal.original_price || undefined,
-          productImage: deal.product_image || undefined
-        }));
-        
-        setDeals(mappedDeals);
+        setDeals(matchedDeals);
       } catch (err) {
         console.error('Error searching deals:', err);
         setError('Failed to search deals');
@@ -79,29 +59,16 @@ export function useSearchStores(query: string) {
       try {
         setLoading(true);
         
-        const { data, error } = await supabase
-          .from('stores')
-          .select('id, name, logo, category, featured, deal_count, url, store_type, country, description')
-          .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
-          .order('name');
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        if (error) throw error;
+        const queryLower = query.toLowerCase();
+        const matchedStores = staticStores.filter(store => 
+          store.name.toLowerCase().includes(queryLower) || 
+          (store.description && store.description.toLowerCase().includes(queryLower))
+        );
         
-        // Map the database columns to our interface properties
-        const mappedStores = (data || []).map(store => ({
-          id: store.id,
-          name: store.name,
-          logo: store.logo,
-          category: store.category,
-          featured: store.featured || false,
-          dealCount: store.deal_count || 0,
-          url: store.url,
-          storeType: store.store_type as 'online' | 'local' | 'both' || 'online',
-          country: store.country || undefined,
-          description: store.description || undefined
-        }));
-        
-        setStores(mappedStores);
+        setStores(matchedStores);
       } catch (err) {
         console.error('Error searching stores:', err);
         setError('Failed to search stores');

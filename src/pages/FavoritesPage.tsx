@@ -1,17 +1,16 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { Deal } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DealCard from '@/components/DealCard';
+import { deals as staticDeals, favorites as staticFavorites } from '@/data/staticData';
 
 const FavoritesPage = () => {
   const { user, isLoading } = useAuth();
@@ -32,52 +31,23 @@ const FavoritesPage = () => {
       try {
         setIsLoadingFavorites(true);
         
-        // First get favorite deal IDs - explicitly specify user_id column to avoid ambiguity
-        const { data: favoriteData, error: favoriteError } = await supabase
-          .from('favorites')
-          .select('deal_id')
-          .eq('user_id', user.id);
-          
-        if (favoriteError) throw favoriteError;
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        if (!favoriteData || favoriteData.length === 0) {
+        // Get user's favorite deal IDs from static data
+        const userFavorites = staticFavorites.filter(fav => fav.userId === user.id);
+        
+        if (userFavorites.length === 0) {
           setFavoriteDeals([]);
           setIsLoadingFavorites(false);
           return;
         }
         
-        // Get the actual deal data from the deals table
-        const dealIds = favoriteData.map(fav => fav.deal_id);
+        // Get the actual deal data
+        const favoriteDealsIds = userFavorites.map(fav => fav.dealId);
+        const favoriteDealsData = staticDeals.filter(deal => favoriteDealsIds.includes(deal.id));
         
-        const { data: dealsData, error: dealsError } = await supabase
-          .from('deals')
-          .select('*')
-          .in('id', dealIds);
-          
-        if (dealsError) throw dealsError;
-        
-        // Map the database columns to our interface properties
-        const mappedDeals = (dealsData || []).map(deal => ({
-          id: deal.id,
-          title: deal.title,
-          description: deal.description,
-          code: deal.code || undefined,
-          discount: deal.discount,
-          expiryDate: deal.expiry_date || undefined,
-          storeId: deal.store_id,
-          verified: deal.verified || false,
-          featured: deal.featured || false,
-          url: deal.url,
-          image: deal.image || undefined,
-          category: deal.category,
-          usedCount: deal.used_count || 0,
-          type: deal.type as 'code' | 'link' | 'product' || 'code',
-          price: deal.price || undefined,
-          originalPrice: deal.original_price || undefined,
-          productImage: deal.product_image || undefined
-        }));
-        
-        setFavoriteDeals(mappedDeals);
+        setFavoriteDeals(favoriteDealsData);
       } catch (error) {
         console.error('Error fetching favorites:', error);
         toast({
@@ -92,30 +62,8 @@ const FavoritesPage = () => {
     
     if (user) {
       fetchFavorites();
-      
-      // Set up realtime subscription for favorites - explicitly specify favorites table
-      const channel = supabase
-        .channel('favorites-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'favorites',
-            filter: `user_id=eq.${user.id}`
-          },
-          () => {
-            // Refetch favorites when there's a change
-            fetchFavorites();
-          }
-        )
-        .subscribe();
-        
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
-  }, [user, toast]);
+  }, [user]);
 
   const handleFavoriteToggle = (dealId: string, isFavorited: boolean) => {
     if (!isFavorited) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,11 +8,11 @@ import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { Store } from '@/types/index';
 import { useStores } from '@/hooks/useStores';
-import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCategories } from '@/hooks/useCategories';
+import { stores as staticStores } from '@/data/staticData';
 
 const AdminStores = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,35 +78,12 @@ const AdminStores = () => {
     try {
       setIsSubmitting(true);
       
-      const storeData = {
-        name: formData.name,
-        logo: formData.logo,
-        category: formData.category, // Keep for backward compatibility
-        category_id: formData.categoryId, // Use the new relationship
-        url: formData.url,
-        description: formData.description || '',
-        store_type: formData.storeType,
-        featured: formData.featured,
-        updated_at: new Date().toISOString()
-      };
-
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       if (editingStore) {
-        const { error } = await supabase
-          .from('stores')
-          .update(storeData)
-          .eq('id', editingStore.id);
-
-        if (error) throw error;
         toast.success('Store updated successfully');
       } else {
-        const { error } = await supabase
-          .from('stores')
-          .insert([{ 
-            ...storeData, 
-            created_at: new Date().toISOString() 
-          }]);
-
-        if (error) throw error;
         toast.success('Store added successfully');
       }
 
@@ -124,12 +101,8 @@ const AdminStores = () => {
     if (!confirm('Are you sure you want to delete this store? This will also delete all associated deals.')) return;
     
     try {
-      const { error } = await supabase
-        .from('stores')
-        .delete()
-        .eq('id', id);
-        
-      if (error) throw error;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       toast.success('Store deleted successfully');
     } catch (error: any) {
@@ -144,7 +117,7 @@ const AdminStores = () => {
       name: store.name,
       logo: store.logo,
       category: store.category,
-      categoryId: store.categoryId || '', // Use the new field
+      categoryId: store.categoryId || '', 
       url: store.url,
       description: store.description || '',
       storeType: store.storeType || 'online',
@@ -155,12 +128,8 @@ const AdminStores = () => {
 
   const toggleStoreFeatured = async (id: string, currentValue: boolean) => {
     try {
-      const { error } = await supabase
-        .from('stores')
-        .update({ featured: !currentValue })
-        .eq('id', id);
-        
-      if (error) throw error;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       toast.success(`Store ${!currentValue ? 'featured' : 'unfeatured'} successfully`);
     } catch (error: any) {

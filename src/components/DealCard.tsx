@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check, Copy, ExternalLink, Heart, Tag } from 'lucide-react';
 import { Deal } from '../types';
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '@/hooks/useAuth';
 import { useStore } from '@/hooks/useStores';
 import { Skeleton } from '@/components/ui/skeleton';
+import { favorites as staticFavorites } from '@/data/staticData';
 
 interface DealCardProps {
   deal: Deal;
@@ -31,22 +30,14 @@ const DealCard: React.FC<DealCardProps> = ({
   
   // Check if deal is favorited when component mounts
   useEffect(() => {
-    const checkFavoriteStatus = async () => {
+    const checkFavoriteStatus = () => {
       if (user) {
-        try {
-          const { data, error } = await supabase
-            .from('favorites')
-            .select('id')
-            .eq('user_id', user.id)
-            .eq('deal_id', deal.id)
-            .single();
-            
-          if (!error && data) {
-            setIsFavorited(true);
-          }
-        } catch (error) {
-          console.error('Error checking favorite status:', error);
-        }
+        // Check if this deal is in the user's favorites
+        const isFavorite = staticFavorites.some(
+          fav => fav.userId === user.id && fav.dealId === deal.id
+        );
+        
+        setIsFavorited(isFavorite);
       }
     };
     
@@ -103,30 +94,15 @@ const DealCard: React.FC<DealCardProps> = ({
     setIsLoading(true);
     
     try {
+      // In a static app, we just toggle the UI state without persisting changes
+      setIsFavorited(!isFavorited);
+      
       if (isFavorited) {
-        // Remove from favorites
-        const { error } = await supabase
-          .from('favorites')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('deal_id', deal.id);
-          
-        if (error) throw error;
-        
-        setIsFavorited(false);
         toast({
           title: "Removed from favorites",
           description: "Deal has been removed from your favorites"
         });
       } else {
-        // Add to favorites
-        const { error } = await supabase
-          .from('favorites')
-          .insert({ user_id: user.id, deal_id: deal.id });
-          
-        if (error) throw error;
-        
-        setIsFavorited(true);
         toast({
           title: "Added to favorites",
           description: "Deal has been added to your favorites"
