@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useCategories } from '@/hooks/useCategories';
+import AdminNavLink from './admin/AdminNavLink';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -65,13 +66,16 @@ const Navbar = () => {
 
         {/* Search, Auth, and Mobile Menu Buttons */}
         <div className="flex items-center gap-2">
+          {/* Admin Link for Quick Access */}
+          {!isMobile && <AdminNavLink />}
+
           {/* Auth Buttons or User Profile */}
           {user ? (
             <div className="hidden md:flex items-center gap-3">
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none">
                   <Avatar className="h-9 w-9 cursor-pointer border-2 border-white hover:border-penny-blue transition-all">
-                    <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || 'User'} />
+                    <AvatarImage src={user.user_metadata?.avatarUrl} alt={user.email || 'User'} />
                     <AvatarFallback className="bg-penny-blue text-white">
                       {getUserInitials()}
                     </AvatarFallback>
@@ -80,7 +84,7 @@ const Navbar = () => {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user.user_metadata?.name || user.email}</p>
+                      <p className="text-sm font-medium">{user.user_metadata?.name || user.name || user.email}</p>
                       <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                     </div>
                   </DropdownMenuLabel>
@@ -175,6 +179,19 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden container-fluid py-4 bg-blur-light animate-slide-down border-b border-gray-200/50">
           <nav className="flex flex-col space-y-3">
+            {/* Admin Quick Access in Mobile Menu */}
+            {isAdmin && (
+              <Link 
+                to="/admin"
+                className="text-base font-medium bg-penny-blue/10 text-penny-blue px-4 py-2 rounded-md flex items-center gap-2 mb-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Admin Dashboard
+              </Link>
+            )}
+            
+            {/* Regular navigation items */}
             {navbarCategories.map((category) => (
               <Link
                 key={category.id}
@@ -185,6 +202,7 @@ const Navbar = () => {
                 {category.name}
               </Link>
             ))}
+            
             {/* Mobile Auth Links */}
             <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200 mt-4">
               {user ? (

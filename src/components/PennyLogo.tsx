@@ -34,11 +34,12 @@ const PennyLogo: React.FC<PennyLogoProps> = ({ size = 'md', className = '' }) =>
       className={`flex items-center focus-ring rounded-md ${className}`}
       onClick={handleClick}
     >
-      <img 
-        src="/lovable-uploads/6087497a-9952-44a6-a323-e9cb8bbaa18c.png"
-        alt="Penny Pinch"
-        className={`${sizeClasses[size]} w-auto`}
-      />
+      <div className="flex items-center">
+        <div className="bg-penny-blue text-white font-bold rounded-md p-1 mr-2">
+          <span className="text-xl">PP</span>
+        </div>
+        <span className="font-semibold text-gray-800 text-lg">PennyPinch</span>
+      </div>
     </Link>
   );
 };
